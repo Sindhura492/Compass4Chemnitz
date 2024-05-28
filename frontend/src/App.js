@@ -1,24 +1,25 @@
 import './App.css';
 import { Route,Routes } from 'react-router-dom';
-import Home from './components/home';
-import About from './components/about';
+import Home from './components/Home'
+import About from './components/About';
 import Create from './views/Create';
-
-
-
+import Login from './components/Login/Login';
+// import { ThemeProvider } from '@mui/material';
+// import { theme } from './utils/themeProvider';
 
 
 function App() {
   return (
+    // <ThemeProvider theme={theme}>
     <div className="App">
       <Routes>
           <Route path='' element={<Home/>}/>
           <Route path='/about' element={<About/>}/>
           <Route path='/create' element={<Create/>}/>
-
-
+          <Route path='/login' element={<Login/>}/>
       </Routes>
     </div>
+    // </ThemeProvider>
   );
 }
 
