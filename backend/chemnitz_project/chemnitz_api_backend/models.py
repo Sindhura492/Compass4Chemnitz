@@ -16,11 +16,12 @@ class Users(models.Model):
 
     
 
-    user_id = models.ForeignKey(User,max_length=45,on_delete=models.CASCADE, related_name='users')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_name=models.CharField(max_length=100, blank=True)
     password=models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
+    first_name = models.CharField(max_length=100,blank=False, null=False)
+    last_name = models.CharField(max_length=100,blank=False, null=False)
+    email=models.EmailField(max_length=100,default='example@example.com',blank=False, null=False)
     is_active = models.BooleanField(default=True)
     address1 = models.CharField(max_length=100, blank=True)
     address2 = models.CharField(max_length=100, blank=True)
@@ -30,7 +31,7 @@ class Users(models.Model):
     
 
     def __str__(self):
-        return self.user_id
+        return self.user_name
 
 
 class Favorites(models.Model):
