@@ -1,9 +1,15 @@
 from rest_framework import serializers
-from .models import *
+from chemnitz_api_backend.models import *
+from django.contrib.auth.models import User
 
-
-
-class CrudSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Crud
-        fields=('name','comments')
+        model = User
+        fields = ['id','username','password']
+        extra_kwargs= {"password":{"write_only":True}}
+
+    def create(self,validated_data):
+        user=User.objects.create_user(**validated_data)
+        return user
+
+
