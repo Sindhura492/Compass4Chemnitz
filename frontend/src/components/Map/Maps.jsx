@@ -11,9 +11,9 @@ const Maps = () => {
   console.log("koko");
 
   return (
-    <APIProvider apiKey={'AIzaSyCJK1nd_ofLEkzrfU6bVKM8LpcdeZvIBN4'}>
+    <APIProvider apiKey={''}>
       <div className={classes.mapContainer}>
-        <Map zoom={10} center={coordinates} mapId={'8e1476c1f7a3e6d9'}>
+        <Map zoom={10} center={coordinates} mapId={''}>
         {/* <Marker position={coordinates} /> */}
         </Map>
       </div>
