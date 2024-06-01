@@ -4,13 +4,9 @@ import Home from './components/Home'
 import About from './components/About';
 import Create from './views/Create';
 import Login from './components/Login/Login';
-// import { ThemeProvider } from '@mui/material';
-// import { theme } from './utils/themeProvider';
-
 
 function App() {
   return (
-    // <ThemeProvider theme={theme}>
     <div className="App">
       <Routes>
           <Route path='' element={<Home/>}/>
@@ -19,7 +15,6 @@ function App() {
           <Route path='/login' element={<Login/>}/>
       </Routes>
     </div>
-    // </ThemeProvider>
   );
 }
 

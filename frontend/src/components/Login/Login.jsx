@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { CssBaseline, Grid, Paper, ThemeProvider } from '@mui/material';
-import { Avatar, TextField, Button, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import Header from '../Header/Header';
+
+import { Avatar, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider, Typography } from '@mui/material';
+
+import useStyles from './styles';
+
 import { theme } from '../../utils/themeProvider';
 
-import useStyles from './styles'
 
 const Login = () => {
 
@@ -61,38 +63,35 @@ const Login = () => {
     }
 
     return (
-        <>
-        <CssBaseline />
         <ThemeProvider theme={theme}>
-            {/* <Header /> */}
+        <CssBaseline />
+            <Header />
             <form onSubmit={handleSubmit}>
                 <Grid className={classes.background}>
                     <Paper className={classes.paperStyle} elevation={10}>
-                    <Button variant='contained' color='secondary'>secondary</Button>
                         <Grid align='center'>
                             <Avatar className={classes.avatarStyle}><LockOutlinedIcon /></Avatar>
                             <h2>{isSignup ? "Signup" : "Login"}</h2>
                         </Grid>
                         {isSignup && (<TextField label='Name' placeholder='Enter Name' name="name" type='text' value={inputs.name} onChange={handleChange} fullWidth required />)}
 
-                        <TextField label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />
-                        <TextField label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
+                        <TextField className={classes.m8} label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />
+                        <TextField className={classes.m8} label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
 
-                        <Button type='submit' variant="contained" className={classes.btnstyle} fullWidth>
+                        <Button type='submit' variant="contained" className={classes.m8} fullWidth>
                             <Typography variant='h6'>{isSignup ? "Signup" : "Login"}</Typography>
                         </Button>
 
                         <Typography variant='h6'>or</Typography>
 
 
-                        <Button variant="contained" onClick={resetState} className={classes.btnstyle} fullWidth>
+                        <Button variant="contained" onClick={resetState} className={classes.m8} fullWidth>
                             <Typography variant='h6'>{isSignup ? "Login" : "Create Account"}</Typography>
                         </Button>
                     </Paper >
                 </Grid>
             </form>
         </ThemeProvider>
-        </>
     )
 }
 

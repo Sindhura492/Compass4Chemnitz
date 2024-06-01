@@ -1,7 +1,7 @@
-import {makeStyles} from '@material-ui/core'
+import { makeStyles } from "@mui/styles";
 
 
-export default makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
     background: {
         position: 'fixed',
         display: 'flex',
@@ -17,18 +17,20 @@ export default makeStyles((theme) => ({
         zIndex: -1,
       },
     avatarStyle: { 
-        backgroundColor: 'red',
+        backgroundColor: `${theme.palette.primary.main} !important`,
     },
     paperStyle: {
         position: 'absolute',
         left: '10%',
         padding: 20,
-        backgroundColor: '#f4e5d1',
+        backgroundColor: `${theme.palette.secondary.light} !important`,
     },
-    btnstyle : { 
-        margin: '8px 0',
+    m8: { 
+        margin: '8px 0 !important',
     }
 }));
+
+export default useStyles;
 
 
 // backgroundColor: '#ff6628' ,

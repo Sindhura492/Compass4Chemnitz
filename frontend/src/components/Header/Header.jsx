@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppBar, Badge, IconButton, Menu, MenuItem, Toolbar, Typography, Box, Button } from '@mui/material';
+import { AppBar, Badge, IconButton, Menu, MenuItem, Toolbar, Typography, Box } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
