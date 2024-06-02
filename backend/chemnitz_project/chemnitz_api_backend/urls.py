@@ -1,19 +1,9 @@
 from django.urls import path
-from .views import *
-from rest_framework.routers import DefaultRouter
-
-
-router=DefaultRouter()
-router.register('crud', CrudViewset,basename='crud')
-
-urlpatterns = router.urls   
-
-# urlpatterns = [
-#     path('home',main),
-#     path('home',main),
-#     path('home',main),
-#     path('home',main),
+from user_api import users
 
 
 
-# ]
+urlpatterns = [
+   # path('users/',users.UserCreate.as_view(), name='users'),
+   path('users/delete/<int:pk>', users.UserDelete.as_view(), name='user_delete'),
+]

@@ -5,7 +5,8 @@ const useStyles = makeStyles((theme) => ({
       padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100px',
     },
     mapContainer: {
-      height: '89vh', width: '100%',
+      height: '100vh', 
+      width: '100%',
     },
     markerContainer: {
       position: 'absolute', transform: 'translate(-50%, -50%)', zIndex: 1, '&:hover': { zIndex: 2 },
@@ -13,6 +14,14 @@ const useStyles = makeStyles((theme) => ({
     pointer: {
       cursor: 'pointer',
     },
+    centerButton: {
+      position: 'absolute',
+      top: '12%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      zIndex: '1000'
+    },
+    
   }));
 
   export default useStyles;
