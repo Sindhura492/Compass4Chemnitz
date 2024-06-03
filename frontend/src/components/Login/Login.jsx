@@ -3,7 +3,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import Header from '../Header/Header';
 
-import { Avatar, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider, Typography } from '@mui/material';
+import { Avatar, Box, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider, Typography } from '@mui/material';
 
 import useStyles from './styles';
 
@@ -76,28 +76,29 @@ const Login = () => {
         <ThemeProvider theme={theme}>
         <CssBaseline />
             <Header />
-            <form onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit}>
                 <Grid className={classes.background}>
                     <Paper className={classes.paperStyle} elevation={10}>
                         <Grid align='center'>
                             <Avatar className={classes.avatarStyle}><LockOutlinedIcon /></Avatar>
                             <h2>{isSignup ? "Signup" : "Login"}</h2>
                         </Grid>
-                        {isSignup && (<TextField className={classes.m8} label='Firstname' placeholder='Enter First Name' name="firstname" type='text' value={inputs.firstname} onChange={handleChange} fullWidth required />)}
+                        {isSignup && (<TextField className={classes.m8} label='Firstname' placeholder='Enter First Name' name="firstname" type='text' value={inputs.firstname} onChange={handleChange} fullWidth required autoFocus  />)}
 
                         {isSignup && (<TextField className={classes.m8}label='Lastname' placeholder='Enter Last Name' name="lastname" type='text' value={inputs.lastname} onChange={handleChange} fullWidth required />)}
 
-                        <TextField className={classes.m8} label='Username' placeholder='Enter Username' type='text' name='username' value={inputs.username} onChange={handleChange} fullWidth required />
+                        <TextField className={classes.m8} label="Username"  placeholder='Enter Username' type='text' name='username' value={inputs.username} onChange={handleChange} fullWidth required autoFocus />
 
                         {isSignup && (<TextField className={classes.m8} label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />)}
 
                         <TextField className={classes.m8} label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
+                        
 
                         <Button type='submit' variant="contained" className={classes.m8} fullWidth>
                             <Typography variant='h6'>{isSignup ? "Signup" : "Login"}</Typography>
                         </Button>
 
-                        <Typography variant='h6'>or</Typography>
+                        <Typography align='center' variant='h6'>or</Typography>
 
 
                         <Button variant="contained" onClick={resetState} className={classes.m8} fullWidth>
@@ -105,7 +106,7 @@ const Login = () => {
                         </Button>
                     </Paper >
                 </Grid>
-            </form>
+            </Box>
         </ThemeProvider>
     )
 }

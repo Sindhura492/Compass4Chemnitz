@@ -20,9 +20,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: `${theme.palette.primary.main} !important`,
     },
     paperStyle: {
-        position: 'absolute',
+        width: '40vw',
+        position: 'relative',
         left: '10%',
-        padding: 20,
+        padding: '20px',
         backgroundColor: `${theme.palette.secondary.light} !important`,
     },
     m8: { 
@@ -38,6 +39,7 @@ export default useStyles;
 // backgroundColor: '#edc75e',
 // backgroundColor: '#ff6628',
 // backgroundColor: '#ff5528'
+
 
 
 

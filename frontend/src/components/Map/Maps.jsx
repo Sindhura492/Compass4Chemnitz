@@ -2,9 +2,9 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import useStyles from './styles';
-import { Button, ButtonGroup, Drawer, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Drawer, IconButton, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
-import Categories from '../Categories/Categories';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Maps = () => {
   const classes = useStyles();
@@ -21,68 +21,72 @@ const Maps = () => {
     [3, "pine", 43.6832688003495, -79.3044252718078]
   ]
 
-  // const [mapOptions, setMapOptions] = useState({});
-
-  // useEffect(() => {
-  //   if (typeof google !== 'undefined' && google.maps) {
-  //     setMapOptions({
-  //       zoomControl: true,
-  //       zoomControlOptions: {
-  //         position: google.maps.ControlPosition.RIGHT_CENTER,
-  //       },
-  //       scrollwheel: true,
-  //       disableDoubleClickZoom: false,
-  //     });
-  //   }
-  // }, []);
-  const [activeCategory, setActiveCategory] = useState('restaurants');
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
+  const mapOptions = {
+    mapTypeControl: false,  // Disable Map/Satellite control
   };
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const fetchPlaces = (category) => {
+    setSelectedCategory(category);
+    setIsDrawerOpen(true);
+    setIsSidebarOpen(true);
+    // if (typeof google !== 'undefined' && google.maps) {
+    //   const service = new google.maps.places.PlacesService(document.createElement('div'));
+    //   const request = {
+    //     location: new google.maps.LatLng(coordinates.lat, coordinates.lng),
+    //     radius: '1500',
+    //     type: [category],
+    //   };
+    //   service.nearbySearch(request, (results, status) => {
+    //     if (status === google.maps.places.PlacesServiceStatus.OK) {
+    //       setPlaces(results);
+    //     }
+    //   });
+    // }
+  };
+
+  const renderPlacesList = () => {
+    return (
+      <List className={classes.list}>
+        {trees.map((place) => (
+          <ListItem key={place[0]}>
+            <ListItemText primary={place[1]} secondary={place[1]} />
+          </ListItem>
+        ))}
+      </List>
+    );
+  };
+
 
   return (
     <APIProvider apiKey={googleMapsApiKey}>
-      <div className={classes.mapContainer}>
-        {/* <ButtonGroup variant="contained" aria-label="outlined primary button group" className={classes.centerButton}>
-        <Button onClick={() => setActiveCategory('restaurants')}>Restaurants</Button>
-        <Button onClick={() => setActiveCategory('hotels')}>Hotels</Button>
-      </ButtonGroup> */}
-
-        <Button onClick={toggleDrawer}>Categories</Button>
-        <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
-          <List>
-            <ListItem button>
-              <ListItemText primary="Restaurants" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Hotels" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Things to do" />
-            </ListItem>
-            {/* Add more categories here */}
-          </List>
-        </Drawer>
-
-
-
-        <Map defaultZoom={10} defaultCenter={coordinates} mapId={mapId}>
-          {/* <AdvancedMarker position={coordinates}>
-          <Pin background={"grey"} borderColor={"green"} glyphColor={"purple"} />
-        </AdvancedMarker> */}
-          {trees.map((point) =>
-            <AdvancedMarker position={{ lat: point[2], lng: point[3] }} key={point[0]}>
-              <Pin background={"grey"} borderColor={"green"} glyphColor={"purple"} />
-            </AdvancedMarker>
-          )}
-        </Map>
-      </div>
-
+      <Box className={classes.root}>
+        <Box className={`${classes.sidebar} ${isSidebarOpen ? classes.sidebarOpen : ''}`}>
+          <Box className={classes.drawerHeader}>
+            <IconButton onClick={() => setIsSidebarOpen(false)} className={classes.closeButton}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          {renderPlacesList()}
+        </Box>
+        <Box className={classes.mapContainer}>
+          <Box className={classes.buttonContainer}>
+            <Button variant="contained" onClick={() => fetchPlaces('restaurant')}>Restaurants</Button>
+            <Button variant="contained" onClick={() => fetchPlaces('hotel')}>Hotels</Button>
+            <Button variant="contained" onClick={() => fetchPlaces('atm')}>ATMs</Button>
+          </Box>
+          <Map defaultZoom={14} defaultCenter={coordinates} mapId={mapId} options={mapOptions}>
+            {trees.map((place) => (
+              <AdvancedMarker position={{ lat: place[2], lng: place[3] }} key={place[0]}>
+                <Pin background={"grey"} borderColor={"green"} glyphColor={"purple"} />
+              
+              </AdvancedMarker>
+            ))}
+          </Map>
+        </Box>
+      </Box>
     </APIProvider>
-
   )
 }
 
