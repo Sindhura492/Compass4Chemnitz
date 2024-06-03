@@ -1,16 +1,15 @@
 from rest_framework import serializers
 from chemnitz_api_backend.models import *
-from chemnitz_api_backend.models import *
+
+
 
 class UserViewSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user_id = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
     class Meta:
         model = Users
-        fields = ['id','user_name','password','first_name', 'last_name', 'email', 'role','address1','address2','address3']
-        extra_kwargs={"password":{"read_only":True}}
-        
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
+        fields = ['user_id','user','user_name', 'first_name', 'last_name', 'email', 'is_active','role','favorite']
+        extra_kwargs = {
+            'user': {'required': False},
+            'first_name': {'required': False},
+            'last_name': {'required': False}
+        }

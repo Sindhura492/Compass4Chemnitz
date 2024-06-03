@@ -1,9 +1,18 @@
 from django.urls import path
-from user_api import users
+from user_api.users import *
+from category_api.categories import *
 
 
 
 urlpatterns = [
-   # path('users/',users.UserCreate.as_view(), name='users'),
-   path('users/delete/<int:pk>', users.UserDelete.as_view(), name='user_delete'),
+       path('user-info/<int:user_id>/', UserProfileUserIdView.as_view(), name='user-profile-user-id'),
+       path('soft-delete-user/<int:user_id>/', DeleteUserView.as_view(), name='soft-delete-user'),
+       path('inactive-users/', InactiveUserListView.as_view(), name='inactive-users'),
+       path('user-favorite-category/<int:user_id>/', UserProfileUserIdView.as_view(), name='user-favorite-category'),
+       path('user-favorite-data/<int:user_id>/', CategoryFavoriteView.as_view(), name='user-favorite-data'),
+       path('kindergartens/',KindergartenView.as_view(), name='kindergarten-list'),
+       path('schulen/',SchulennView.as_view(), name='schulen-list'),
+       path('jugendberufshilfens/',JugendberufshilfenView.as_view(), name='jugendberufshilfens-list'),
+       path('schulsozialarbeits/',SchulsozialarbeitView.as_view(), name='schulsozialarbeits-list'),
+
 ]
