@@ -1,0 +1,12 @@
+{
+    "apiBaseURL": "http://127.0.0.1:8000",
+    "routes": {
+        "register": "/api/user/register/",
+        "login": "/api/token/",
+        "getSchools": "/api/schulen/",
+        "getKindergarden":  "/api/kindergartens/",
+        "getSocialChildProjects": "/api/schulsozialarbeits/",
+        "getSocialTeenagerProjects": "/api/jugendberufshilfens/"
+
+    }
+}

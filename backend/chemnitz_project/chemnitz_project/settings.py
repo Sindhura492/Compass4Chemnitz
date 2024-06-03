@@ -129,7 +129,7 @@ WSGI_APPLICATION = 'chemnitz_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'dwt',
+        'NAME':'dwt_project',
         'USER':'root',
         'PASSWORD':'root',
         'HOST': 'localhost',  

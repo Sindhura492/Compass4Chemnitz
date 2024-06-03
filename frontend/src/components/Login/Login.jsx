@@ -7,7 +7,7 @@ import { Avatar, Box, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider
 
 import useStyles from './styles';
 
-import api from '../../api';
+import api, { routes } from '../../api';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +42,7 @@ const Login = () => {
         setLoading(true)
         e.preventDefault()
         try {
-            const route = isSignup ? "/api/user/register/" : "/api/token/";
+            const route = isSignup ? routes.register : routes.login;
             const data = {
                     "username": inputs.username,
                     "first_name": inputs.firstname,

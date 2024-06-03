@@ -1,8 +1,9 @@
 import axios from "axios"
-import { ACCESS_TOKEN } from "./constants"
+import { ACCESS_TOKEN } from "./constants";
+import config from './config.json';
 
 const api=axios.create({
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: import.meta.env.VITE_API_URL || config.apiBaseURL
 })
 
 api.interceptors.request.use(
@@ -17,5 +18,7 @@ api.interceptors.request.use(
         return Promise.reject(error)
     }
 )
+
+export const routes = config.routes;
 
 export default api;
