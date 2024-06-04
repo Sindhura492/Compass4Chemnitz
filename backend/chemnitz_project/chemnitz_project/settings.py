@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,6 +18,8 @@ SECRET_KEY = 'django-insecure-azkvv^^0nl30+wdzrr%74!mce_zs@+xy^ln(l6mps%q!+mci4k
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+load_dotenv()
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 
 # Application definition
@@ -129,7 +133,7 @@ WSGI_APPLICATION = 'chemnitz_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'dwt_project',
+        'NAME':'dwt',
         'USER':'root',
         'PASSWORD':'root',
         'HOST': 'localhost',  

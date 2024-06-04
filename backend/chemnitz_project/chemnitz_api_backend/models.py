@@ -46,15 +46,15 @@ class Users(models.Model):
 
 
 class UserAddress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    house_no=models.CharField(max_length=100)
-    street=models.CharField(max_length=100)
-    place = models.CharField(max_length=100)
-    state=models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
-    pincode=models.IntegerField()
-    latitude=models.FloatField()
-    longitude=models.FloatField()
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='addresses')
+    house_no = models.CharField(max_length=50)
+    street_name = models.CharField(max_length=255,null=True, blank=True)
+    postalcode = models.CharField(max_length=20,null=True, blank=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, default='Saxony')
+    country = models.CharField(max_length=100,default='Germany')
+    latitude = models.FloatField(blank=True)
+    longitude = models.FloatField(blank=True)
 
 
 class Kindergarten(models.Model):

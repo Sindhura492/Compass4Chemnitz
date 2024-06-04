@@ -1,6 +1,7 @@
 from django.urls import path
 from user_api.users import *
 from category_api.categories import *
+from address_api.address import *
 
 
 
@@ -14,5 +15,6 @@ urlpatterns = [
        path('schulen/',SchulennView.as_view(), name='schulen-list'),
        path('jugendberufshilfens/',JugendberufshilfenView.as_view(), name='jugendberufshilfens-list'),
        path('schulsozialarbeits/',SchulsozialarbeitView.as_view(), name='schulsozialarbeits-list'),
-
+       path('add-address/', AddressCreateView.as_view(), name='add-address'),
+       path('user-addresses/<int:user_id>/', AddressCreateView.as_view(), name='user-addresses'),
 ]
