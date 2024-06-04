@@ -2,26 +2,19 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import useStyles from './styles';
-import { Box, Button, ButtonGroup, Drawer, IconButton, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Card, CardContent, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip, Typography } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
 import CloseIcon from '@mui/icons-material/Close';
 import { categories } from '../../constants';
 import api, { routes } from '../../api';
+import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
 
 const Maps = () => {
   const classes = useStyles();
   const coordinates = { lat: 50.827847, lng: 12.921370 };
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  // console.log(googleMapsApiKey);
-
   const mapId = import.meta.env.VITE_MAP_ID;
-
-  const trees = [
-    [1, "Ash, green", 43.6495364521731, -79.41618733111581],
-    [2, "Birch, white", 443.8837189558964, -79.3545349538418],
-    [3, "pine", 43.6832688003495, -79.3044252718078]
-  ]
 
   const mapOptions = {
     mapTypeControl: false,  // Disable Map/Satellite control
@@ -30,31 +23,82 @@ const Maps = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [places, setPlaces] = useState([]);
 
+  const [newSidebarContent, setNewSidebarContent] = useState(null);
+
+  const [selectedPin, setSelectedPin] = useState(null);
+
+
   const fetchPlaces = async (category) => {
     setSelectedCategory(category.id);
-    const res=await api.get(routes[category.urlName]);
+    const res = await api.get(routes[category.urlName]);
     console.log(res.data);
     setPlaces(res.data);
     setIsSidebarOpen(true);
+    setNewSidebarContent(null); // Reset new sidebar content
   };
 
-  const fetchSchools = (data) => {
-  }
+  const handleDirectionsClick = async (place) => {
+    try {
+      // Fetch new content (example endpoint)
+      // const res = await api.get(`/api/directions/${place.ID}`);
+      // setNewSidebarContent(res.data); // Set new sidebar content
+      setNewSidebarContent([
+        {
+            "id": 7,
+            "house_no": "123",
+            "street_name": "Main St",
+            "postalcode": "12345",
+            "city": "Anytown",
+            "state": "Anystate",
+            "country": "Anycountry",
+            "latitude": 40.7128,
+            "longitude": -74.006,
+            "user": 5
+        }
+    ])
+    } catch (error) {
+      console.error('Error fetching directions:', error);
+    }
+  };
+
+  const renderNewSidebarContent = () => {
+    if (!newSidebarContent) return null;
+    return (
+      <List className={classes.scrollbar}>
+        {/* Render the new sidebar content here */}
+        <Typography variant="body2">{JSON.stringify(newSidebarContent)}</Typography>
+      </List>
+    );
+  };
+
 
   const renderPlacesList = () => {
-    console.log("hihihih");
-    if(places){
-      places.map((place) => {
-      console.log("ssss", place.X, place.Y);
-    })
-  }
-  console.log("Byyeee");
     return (
-      <List className={classes.list}>
+      <List className={classes.scrollbar}>
         {places.map((place, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={place?.PLZ} secondary={place?.TELEFON} />
-          </ListItem>
+          <>
+            <ListItem key={index}>
+              <ListItemButton>
+                <ListItemText
+                  primary={place?.BEZEICHNUNG}
+                  secondary={
+                    <React.Fragment>
+                      <Typography component={'span'} variant="body2" color="text.primary" > {place?.ART} </Typography><br />
+                      <Typography component={'span'} variant="body2" color="text.secondary" > {place?.STRASSE} </Typography><br />
+                      <Typography component={'span'} variant="body2" color="text.secondary" > {place?.TELEFON} </Typography><br />
+                    </React.Fragment>
+                  }
+                />
+              </ListItemButton>
+              <Tooltip>
+                <DirectionsRoundedIcon
+                  onClick={() => handleDirectionsClick(place)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </Tooltip>
+            </ListItem>
+            <Divider />
+          </>
         ))}
       </List>
     )
@@ -75,18 +119,27 @@ const Maps = () => {
     }
   };
 
+  const handlePinClick = (place) => {
+    setSelectedPin(place); // Update selected pin's data
+  };
+
+  const renderPlaceDetails = (place) => {
+    
+  }
+
 
   return (
     <APIProvider apiKey={googleMapsApiKey}>
       <Box className={classes.root}>
-      <Box className={`${classes.sidebar} ${isSidebarOpen ? classes.sidebarOpen : ''}`}>
-        <Box className={classes.drawerHeader}>
-          <IconButton onClick={() => setIsSidebarOpen(false)} className={classes.closeButton}>
-            <CloseIcon />
-          </IconButton>
+        <Box className={`${classes.sidebar} ${isSidebarOpen ? classes.sidebarOpen : ''}`}>
+          <Box className={classes.drawerHeader}>
+            <Typography variant="h6">{newSidebarContent ? 'Select Address' : 'Social Teenager Projects'}</Typography>
+            <IconButton onClick={() => setIsSidebarOpen(false)} className={classes.closeButton}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          {newSidebarContent ? renderNewSidebarContent() : renderPlacesList()}
         </Box>
-        {renderPlacesList()}
-      </Box>
         <Box className={classes.mapContainer}>
           <Box className={classes.buttonContainer}>
             {categories.map((category) => (
@@ -94,15 +147,16 @@ const Maps = () => {
             ))}
           </Box>
           <Map defaultZoom={12} defaultCenter={coordinates} mapId={mapId} options={mapOptions}>
-            {places.map((place) => {
+            {places.map((place, index) => {
               const pinStyle = getPinStyle(selectedCategory); // Assuming each place has a category property
               return (
-                <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={place.ID}>
+                <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={index} onClick={() => handlePinClick(place)}>
                   <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />
                 </AdvancedMarker>
               );
             })}
           </Map>
+          {selectedPin && renderPlaceDetails()} {/* Render sidebar if a pin is selected */}
         </Box>
       </Box>
     </APIProvider>

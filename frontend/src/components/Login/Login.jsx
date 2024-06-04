@@ -13,11 +13,14 @@ import { useNavigate } from 'react-router-dom';
 
 
 import { theme } from '../../utils/themeProvider';
+import { getResponseError } from '../../utils/errorUtils';
+import ErrorHandler from '../ErrorHandler/ErrorHandler';
+import Loader from '../Loader/Loader';
 
 
 const Login = () => {
 
-    const [loading,setLoading]=useState(false);
+    const [isLoading,setLoading]=useState(false);
     const navigate=useNavigate()
 
     const classes = useStyles();
@@ -31,11 +34,14 @@ const Login = () => {
         password: ''
     });
 
+    const [error, setError] = useState(null);
+
     const handleChange = (e) => {
         setInputs((prevState) => ({
             ...prevState,
             [e.target.name]: e.target.value
         }))
+        setError(null);
     }
 
     const handleSubmit = async (e) => {
@@ -57,11 +63,15 @@ const Login = () => {
                 navigate('/')
             }
             else{
-                navigate('/login')
+                navigate('/login');
+                setIsSignup(false);
             }        
         }
         catch(error){
-            alert(error)
+            // alert(error)
+            console.log("helloooo");
+            const errorData = getResponseError(error);
+            setError(errorData);
         }finally{
             setLoading(false)
         }
@@ -75,10 +85,14 @@ const Login = () => {
     return (
         <ThemeProvider theme={theme}>
         <CssBaseline />
+        {isLoading && <Loader />}
             <Header />
+            
             <Box component="form" onSubmit={handleSubmit}>
-                <Grid className={classes.background}>
-                    <Paper className={classes.paperStyle} elevation={10}>
+                <Grid container className={classes.background} sx={{ minHeight: '100vh' }}>
+                <Grid container sx={{ maxWidth: '40vw' }}>
+                    <Paper className={classes.paperStyle} elevation={10} sx={{ width: '100%' }}>
+                    <Box className={classes.scrollbar} sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 160px)' }}>
                         <Grid align='center'>
                             <Avatar className={classes.avatarStyle}><LockOutlinedIcon /></Avatar>
                             <h2>{isSignup ? "Signup" : "Login"}</h2>
@@ -104,9 +118,12 @@ const Login = () => {
                         <Button variant="contained" onClick={resetState} className={classes.m8} fullWidth>
                             <Typography variant='h6'>{isSignup ? "Login" : "Create Account"}</Typography>
                         </Button>
+                    </Box>
                     </Paper >
                 </Grid>
+                </Grid>
             </Box>
+            {error && <ErrorHandler error={error} onClose={() => setError(null)} />}
         </ThemeProvider>
     )
 }

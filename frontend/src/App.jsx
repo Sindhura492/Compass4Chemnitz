@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 import Login from "./components/Login/Login"
 import Home from "./components/Home"
+import Categories from "./components/Categories/Categories"
 
 
 function Logout(){
@@ -20,6 +21,7 @@ function App() {
           <Route path='/' element={<ProtectedRoute> <Home/> </ProtectedRoute>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/logout' element={<Logout/>}/>
+          <Route path='/categories' element={<Categories/>}/>
           <Route path='*' element={<NotFound/>}/>
           
 
