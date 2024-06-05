@@ -10,22 +10,6 @@ from django.conf import settings
 
 
 class AddressCreateView(APIView):
-    # def post(self, request, *args, **kwargs):
-    #     serializer = AddressSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         address = serializer.save()
-    #         user = address.user
-    #         print(user,';;;;;')
-    #         print(user.addresses.count,'pppp')
-    #         if UserAddress.objects.filter(user=user).count() > 1:
-    #            print('yesssssss')
-    #            print(user.role)
-    #            user.role = Users.POWER_USER  
-    #            user.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
     def post(self, request, *args, **kwargs):
         api_key = settings.GOOGLE_MAPS_API_KEY
         address_data = request.data
@@ -53,7 +37,6 @@ class AddressCreateView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-
 
 
     
