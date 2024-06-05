@@ -94,7 +94,7 @@ class Kindergarten(models.Model):
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     BARRIEREFREI=models.BooleanField(default=True)
     INTEGRATIV=models.BooleanField(default=True)
-    CATEGORY_ID=models.CharField(max_length=100,default='1')
+    # CATEGORY_ID=models.CharField(max_length=100,default='1')
 
 
 class Schulen(models.Model):
@@ -128,7 +128,7 @@ class Schulen(models.Model):
     Creator = models.CharField(max_length=100,blank=True, null=True)
     EditDate = models.CharField(max_length=300,blank=True, null=True)
     Editor = models.CharField(max_length=100,blank=True, null=True)
-    CATEGORY_ID=models.CharField(max_length=100,default='2')
+    # CATEGORY_ID=models.CharField(max_length=100,default='2')
 
 
 
@@ -147,7 +147,7 @@ class Jugendberufshilfen(models.Model):
     TELEFON=models.CharField(max_length=200)
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     FAX=models.CharField(max_length=200)
-    CATEGORY_ID=models.CharField(max_length=100,default='3')
+    # CATEGORY_ID=models.CharField(max_length=100,default='3')
 
 
 
@@ -166,7 +166,7 @@ class Schulsozialarbeit(models.Model):
     TELEFON=models.CharField(max_length=200)
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     FAX=models.CharField(max_length=200)
-    CATEGORY_ID=models.CharField(max_length=100,default='4')
+    # CATEGORY_ID=models.CharField(max_length=100,default='4')
 
 
 

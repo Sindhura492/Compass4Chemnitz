@@ -4,18 +4,24 @@ from rest_framework import status
 from chemnitz_api_backend.models import Favorite
 from .serializers import FavoriteSerializer
 from chemnitz_api_backend.models import *
+from category_api.serializers import *
 
 class FavoriteView(APIView):
     def post(self, request):
         user = request.data.get('user')
         category = request.data.get('category')
-        print(category)
         item = request.data.get('item')
 
         try:
             category = int(category)
         except (TypeError, ValueError):
             return Response({'error': 'Category must be an integer'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            existing_favorite = Favorite.objects.get(user=user, category=category, item=item)
+            return Response({'error': 'Favorite already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        except Favorite.DoesNotExist:
+            pass
 
         if category == 1:
             try:
@@ -88,6 +94,9 @@ class FavoriteView(APIView):
             return Response({'message': 'Favorite deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Favorite.DoesNotExist:
             return Response({'error': 'Favorite not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
     
 
 
