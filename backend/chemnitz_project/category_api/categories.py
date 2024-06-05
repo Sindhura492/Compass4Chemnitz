@@ -9,54 +9,88 @@ from rest_framework.views import APIView
 
 
 
-class KindergartenView(APIView):
-    def get(self, request, *args, **kwargs):
-        kindergartens = Kindergarten.objects.all()
-        serializer = KindergartenSerializer(kindergartens, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class KindergartenView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         kindergartens = Kindergarten.objects.all()
+#         serializer = KindergartenSerializer(kindergartens, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# class SchulennView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         schules = Schulen.objects.all()
+#         serializer = SchulenSerializer(schules, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+# class JugendberufshilfenView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         jugendberufshilfens = Jugendberufshilfen.objects.all()
+#         serializer = JugendberufshilfenSerializer(jugendberufshilfens, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+# class SchulsozialarbeitView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         schulsozialarbeits = Schulsozialarbeit.objects.all()
+#         serializer = SchulsozialarbeitSerializer(schulsozialarbeits, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class KindergartenView(APIView):
+ def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        kindergartens = Schulsozialarbeit.objects.all()
+        favorite_items = Favorite.objects.filter(user=user_id, category=1, item__in=kindergartens.values_list('ID', flat=True)).values_list('item', flat=True)
+        
+        serializer = SchulenSerializer(kindergartens, many=True)
+        data = serializer.data
+
+        for item in data:
+            item['is_favorite'] = item['ID'] in favorite_items
+            item['category'] = '1'
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+class JugendberufshilfenView(APIView):
+ def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        jugendberufshilfens = Schulsozialarbeit.objects.all()
+        favorite_items = Favorite.objects.filter(user=user_id, category=2, item__in=jugendberufshilfens.values_list('ID', flat=True)).values_list('item', flat=True)
+        
+        serializer = SchulenSerializer(jugendberufshilfens, many=True)
+        data = serializer.data
+
+        for item in data:
+            item['is_favorite'] = item['ID'] in favorite_items
+            item['category'] = '3'
+        
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+class SchulsozialarbeitView(APIView):
+ def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        schulsozialarbeits = Schulsozialarbeit.objects.all()
+        favorite_items = Favorite.objects.filter(user=user_id, category=4, item__in=schulsozialarbeits.values_list('ID', flat=True)).values_list('item', flat=True)
+        
+        serializer = SchulenSerializer(schulsozialarbeits, many=True)
+        data = serializer.data
+
+        for item in data:
+            item['is_favorite'] = item['ID'] in favorite_items
+            item['category'] = '4'
+        
+        return Response(data, status=status.HTTP_200_OK)
+    
 class SchulennView(APIView):
     def get(self, request, *args, **kwargs):
-        schules = Schulen.objects.all()
-        serializer = SchulenSerializer(schules, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user_id = request.user.id
+        schulen = Schulen.objects.all()
+        favorite_items = Favorite.objects.filter(user=user_id, category=2, item__in=schulen.values_list('ID', flat=True)).values_list('item', flat=True)
+        
+        serializer = SchulenSerializer(schulen, many=True)
+        data = serializer.data
+
+        for item in data:
+            item['is_favorite'] = item['ID'] in favorite_items
+            item['category'] = '2'
+        
+        return Response(data, status=status.HTTP_200_OK)
     
-class JugendberufshilfenView(APIView):
-    def get(self, request, *args, **kwargs):
-        jugendberufshilfens = Jugendberufshilfen.objects.all()
-        serializer = JugendberufshilfenSerializer(jugendberufshilfens, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class SchulsozialarbeitView(APIView):
-    def get(self, request, *args, **kwargs):
-        schulsozialarbeits = Schulsozialarbeit.objects.all()
-        serializer = SchulsozialarbeitSerializer(schulsozialarbeits, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class CategoryFavoriteView(APIView):
-    def get(self, request, user_id, *args, **kwargs):
-        user = get_object_or_404(Users, user__id=user_id)
-        favorite = user.favorite
-        
-        if favorite == 3:
-            kindergartens = Kindergarten.objects.all()
-            serializer = KindergartenSerializer(kindergartens, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        elif favorite == 4:
-            schulen = Schulen.objects.all()
-            serializer = SchulenSerializer(schulen, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        elif favorite == 5:
-            socials = Jugendberufshilfen.objects.all()
-            serializer = JugendberufshilfenSerializer(socials, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        elif favorite == 6:
-            projects = Schulsozialarbeit.objects.all()
-            serializer = SchulsozialarbeitSerializer(projects, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        else:
-            return Response({"detail": "No data available for this favorite category."}, status=status.HTTP_400_BAD_REQUEST)

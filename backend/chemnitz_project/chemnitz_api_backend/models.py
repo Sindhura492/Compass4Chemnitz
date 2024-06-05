@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class Users(models.Model):
@@ -37,7 +39,6 @@ class Users(models.Model):
     email=models.EmailField(max_length=100,default='example@example.com',blank=False, null=False)
     is_active = models.BooleanField(default=True)
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True, default=2)
-    favorite = models.PositiveSmallIntegerField(choices=FAV_CATEGORY,blank=True, null=True)
     
 
     def __str__(self):
@@ -46,15 +47,30 @@ class Users(models.Model):
 
 
 class UserAddress(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='addresses')
+    house_no = models.CharField(max_length=50)
+    street_name = models.CharField(max_length=255,null=True, blank=True)
+    postalcode = models.CharField(max_length=20,null=True, blank=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, default='Saxony')
+    country = models.CharField(max_length=100,default='Germany')
+    latitude = models.FloatField(blank=True)
+    longitude = models.FloatField(blank=True)
+
+class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    house_no=models.CharField(max_length=100)
-    street=models.CharField(max_length=100)
-    place = models.CharField(max_length=100)
-    state=models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
-    pincode=models.IntegerField()
-    latitude=models.FloatField()
-    longitude=models.FloatField()
+    category=models.IntegerField(blank=True, null=True)
+    item=models.IntegerField(blank=True, null=True)
+    TRAEGER = models.CharField(max_length=300, blank=True, null=True)
+    BEZEICHNUNG=models.CharField(max_length=200,blank=True, null=True)
+    KURZBEZEICHNUNG=models.CharField(max_length=200,blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    STRASSE=models.CharField(max_length=200,blank=True, null=True)
+    TELEFON=models.CharField(max_length=200,blank=True, null=True)
+    PLZ=models.CharField(max_length=200,blank=True, null=True)
+    ORT=models.CharField(max_length=200,blank=True, null=True)
+    EMAIL=models.EmailField(max_length=200,default='example@example.com',blank=True, null=True)
+
 
 
 class Kindergarten(models.Model):
@@ -78,6 +94,7 @@ class Kindergarten(models.Model):
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     BARRIEREFREI=models.BooleanField(default=True)
     INTEGRATIV=models.BooleanField(default=True)
+    # CATEGORY_ID=models.CharField(max_length=100,default='1')
 
 
 class Schulen(models.Model):
@@ -111,6 +128,8 @@ class Schulen(models.Model):
     Creator = models.CharField(max_length=100,blank=True, null=True)
     EditDate = models.CharField(max_length=300,blank=True, null=True)
     Editor = models.CharField(max_length=100,blank=True, null=True)
+    # CATEGORY_ID=models.CharField(max_length=100,default='2')
+
 
 
 class Jugendberufshilfen(models.Model):
@@ -128,6 +147,8 @@ class Jugendberufshilfen(models.Model):
     TELEFON=models.CharField(max_length=200)
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     FAX=models.CharField(max_length=200)
+    # CATEGORY_ID=models.CharField(max_length=100,default='3')
+
 
 
 class Schulsozialarbeit(models.Model):
@@ -145,6 +166,7 @@ class Schulsozialarbeit(models.Model):
     TELEFON=models.CharField(max_length=200)
     EMAIL=models.EmailField(max_length=200,default='example@example.com')
     FAX=models.CharField(max_length=200)
+    # CATEGORY_ID=models.CharField(max_length=100,default='4')
 
 
 
