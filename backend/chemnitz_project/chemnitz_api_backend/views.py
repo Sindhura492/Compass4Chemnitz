@@ -1,13 +1,18 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework.settings import api_settings
+
+
+
 
 
 
@@ -26,7 +31,7 @@ class CreateUserView(generics.CreateAPIView):
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            return Response({"detail": "User created successfully."}, status=status.HTTP_201_CREATED, headers=headers)
         except ValidationError as e:
             detail = e.detail if isinstance(e.detail, str) else list(e.detail.values())[0][0]
             return Response({"detail": detail}, status=status.HTTP_400_BAD_REQUEST)

@@ -2,6 +2,8 @@ from rest_framework import serializers
 from chemnitz_api_backend.models import *
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,8 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=password,
             first_name=user.first_name,
             last_name=user.last_name,
-            email=user.email
+            email=user.email,
         )
         return user
-
 

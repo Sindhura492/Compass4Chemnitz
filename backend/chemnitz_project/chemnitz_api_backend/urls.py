@@ -17,7 +17,9 @@ urlpatterns = [
        path('schulsozialarbeits/',SchulsozialarbeitView.as_view(), name='schulsozialarbeits-list'),
        path('add-address/', AddressCreateView.as_view(), name='add-address'),
        path('user-addresses/<int:user_id>/', AddressCreateView.as_view(), name='user-addresses'),
+       path('user-address/delete/<int:address_id>/', AddressCreateView.as_view(), name='delete-address'),
        path('favorites/', FavoriteView.as_view(), name='favorite-create'),
        path('favorites/<int:user_id>/', FavoriteView.as_view(), name='favorite-list'),
        path('favorites/delete/<int:user_id>/', FavoriteView.as_view(), name='favorite-delete'),
+
 ]

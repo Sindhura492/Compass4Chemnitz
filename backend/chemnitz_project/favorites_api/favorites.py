@@ -15,11 +15,11 @@ class FavoriteView(APIView):
         try:
             category = int(category)
         except (TypeError, ValueError):
-            return Response({'error': 'Category must be an integer'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Category must be an integer'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
             existing_favorite = Favorite.objects.get(user=user, category=category, item=item)
-            return Response({'error': 'Favorite already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Favorite already exists'}, status=status.HTTP_400_BAD_REQUEST)
         except Favorite.DoesNotExist:
             pass
 
@@ -27,27 +27,27 @@ class FavoriteView(APIView):
             try:
                 item_data = Kindergarten.objects.get(ID=item)
             except Kindergarten.DoesNotExist:
-                return Response({'error': 'Kindergarten item not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'message': 'Kindergarten item not found'}, status=status.HTTP_404_NOT_FOUND)
         
         elif category == 2:
             try:
                 item_data = Schulen.objects.get(ID=item)
             except Schulen.DoesNotExist:
-                return Response({'error': 'Schule item not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'message': 'Schule item not found'}, status=status.HTTP_404_NOT_FOUND)
 
         elif category == 3:
             try:
                 item_data = Jugendberufshilfen.objects.get(ID=item)
             except Jugendberufshilfen.DoesNotExist:
-                return Response({'error': 'Jugendberufshilfen item not found'}, status=status.HTTP_404_NOT_FOUND)  
+                return Response({'message': 'Jugendberufshilfen item not found'}, status=status.HTTP_404_NOT_FOUND)  
 
         elif category == 4:
             try:
                 item_data = Schulsozialarbeit.objects.get(ID=item)
             except Schulsozialarbeit.DoesNotExist:
-                return Response({'error': 'Schulsozialarbeit item not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'message': 'Schulsozialarbeit item not found'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({'error': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Invalid category'}, status=status.HTTP_400_BAD_REQUEST)
 
 
         data = {
@@ -68,7 +68,7 @@ class FavoriteView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"message": "Favorite created successfully!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -86,14 +86,14 @@ class FavoriteView(APIView):
         item = request.data.get('item')
 
         if not category or not item:
-            return Response({'error': 'Category and item are required to delete a favorite'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Category and item are required to delete a favorite'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             favorite = Favorite.objects.get(user=user_id, category=category, item=item)
             favorite.delete()
             return Response({'message': 'Favorite deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Favorite.DoesNotExist:
-            return Response({'error': 'Favorite not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Favorite not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
 

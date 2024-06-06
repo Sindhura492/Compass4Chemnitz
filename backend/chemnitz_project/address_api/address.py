@@ -22,7 +22,7 @@ class AddressCreateView(APIView):
             address_data['latitude'] = location.latitude
             address_data['longitude'] = location.longitude
         else:
-            return Response({"error": "Could not calculate distance, please give more accurate address."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Could not calculate distance, please give more accurate address."}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer = AddressSerializer(data=address_data)
         if serializer.is_valid():
@@ -33,7 +33,7 @@ class AddressCreateView(APIView):
                 user.role = Users.POWER_USER
                 user.save()
             
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"message":"Address added successfully."}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -42,7 +42,17 @@ class AddressCreateView(APIView):
     
     def get(self, request, user_id, *args, **kwargs):
         if not UserAddress.objects.filter(user_id=user_id).exists():
-            return Response({"error": "Please add atleast one  address to calculate distances.."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Please add atleast one  address to calculate distances.."}, status=status.HTTP_400_BAD_REQUEST)
         addresses = UserAddress.objects.filter(user=user_id)
         serializer = AddressSerializer(addresses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    def delete(self, request, address_id, *args, **kwargs):
+        try:
+            address = UserAddress.objects.get(id=address_id)
+        except UserAddress.DoesNotExist:
+            return Response({"message": "Address not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        address.delete()
+        return Response({"message":"Address deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
