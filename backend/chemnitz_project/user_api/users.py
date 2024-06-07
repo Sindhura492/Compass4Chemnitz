@@ -5,6 +5,7 @@ from user_api.serializers import *
 from chemnitz_api_backend.models import Users
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 
 
@@ -36,8 +37,12 @@ class DeleteUserView(generics.UpdateAPIView):
         user = get_object_or_404(Users, id=user_id)
         user.is_active = False 
         user.save()
+
+        auth_user = User.objects.get(id=user.id)
+        auth_user.is_active = False
+        auth_user.save()
         serializer = self.get_serializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "User deleted successfully."}, status=status.HTTP_200_OK)
     
 class InactiveUserListView(generics.ListAPIView):
     queryset = Users.objects.filter(is_active=False)
