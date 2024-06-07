@@ -10,9 +10,9 @@ const useStyles = makeStyles((theme) => ({
   pointer: {
     cursor: 'pointer',
   },
-  root: {
+  map: {
     display: 'flex',
-    height: '100vh',
+    height: '91vh',
   },
   drawer: {
     width: '25%',
@@ -34,10 +34,15 @@ const useStyles = makeStyles((theme) => ({
   },
   sidebarOpen: {
     width: '25%',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%', // Full width on small screens
+      flexDirection: 'column',
+    },
   },
   mapContainer: {
     flexGrow: 1,
     position: 'relative',
+    overflowY: 'auto'
   },
   buttonContainer: {
     position: 'absolute',
@@ -58,22 +63,20 @@ const useStyles = makeStyles((theme) => ({
   closeButton: {
     zIndex: 1300, // Ensure it is above the drawer content
   },
-  scrollbar: {
-    '&::-webkit-scrollbar': {
-      width: '8px',
+  placeDetailsCard: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    position: 'absolute',
+    top: 85,
+    left: 15, // Positioned beside the sidebar
+    width: '25%', // Fixed width for the card
+    maxWidth: '25%',
+    [theme.breakpoints.down('sm')]: {
+      left: 0,
+      width: '100%',
     },
-    '&::-webkit-scrollbar-track': {
-      background: '#f1f1f1',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: '#888',
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      background: '#555',
-    },
+    zIndex: 1000,
   },
-
 
 }));
 

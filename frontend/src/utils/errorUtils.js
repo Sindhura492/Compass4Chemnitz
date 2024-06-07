@@ -1,5 +1,4 @@
 export const getResponseError = (error) => {
-    console.log(error);
     if (error === null || error === undefined){
         return null;
     }

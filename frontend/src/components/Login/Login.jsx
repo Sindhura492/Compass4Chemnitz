@@ -20,8 +20,8 @@ import Loader from '../Loader/Loader';
 
 const Login = () => {
 
-    const [isLoading,setLoading]=useState(false);
-    const navigate=useNavigate()
+    const [isLoading, setLoading] = useState(false);
+    const navigate = useNavigate()
 
     const classes = useStyles();
 
@@ -31,7 +31,10 @@ const Login = () => {
         lastname: '',
         username: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: '',
+        house_no: '',
+
     });
 
     const [error, setError] = useState(null);
@@ -50,29 +53,27 @@ const Login = () => {
         try {
             const route = isSignup ? routes.register : routes.login;
             const data = {
-                    "username": inputs.username,
-                    "first_name": inputs.firstname,
-                    "last_name": inputs.lastname,
-                    "email": inputs.email,
-                    "password": inputs.password
+                "username": inputs.username,
+                "first_name": inputs.firstname,
+                "last_name": inputs.lastname,
+                "email": inputs.email,
+                "password": inputs.password
             }
-            const res=await api.post(route, data)
-            if(!isSignup){
-                localStorage.setItem(ACCESS_TOKEN,res.data.access)
-                localStorage.setItem(REFRESH_TOKEN,res.data.refresh)
+            const res = await api.post(route, data)
+            if (!isSignup) {
+                localStorage.setItem(ACCESS_TOKEN, res.data.access)
+                localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
                 navigate('/')
             }
-            else{
+            else {
                 navigate('/login');
                 setIsSignup(false);
-            }        
+            }
         }
-        catch(error){
-            // alert(error)
-            console.log("helloooo");
+        catch (error) {
             const errorData = getResponseError(error);
             setError(errorData);
-        }finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -84,43 +85,53 @@ const Login = () => {
 
     return (
         <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {isLoading && <Loader />}
+            <CssBaseline />
+            {isLoading && <Loader />}
             <Header />
-            
+
             <Box component="form" onSubmit={handleSubmit}>
                 <Grid container className={classes.background} sx={{ minHeight: '100vh' }}>
-                <Grid container sx={{ maxWidth: '40vw' }}>
-                    <Paper className={classes.paperStyle} elevation={10} sx={{ width: '100%' }}>
-                    <Box className={classes.scrollbar} sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 160px)' }}>
-                        <Grid align='center'>
-                            <Avatar className={classes.avatarStyle}><LockOutlinedIcon /></Avatar>
-                            <h2>{isSignup ? "Signup" : "Login"}</h2>
-                        </Grid>
-                        {isSignup && (<TextField className={classes.m8} label='Firstname' placeholder='Enter First Name' name="firstname" type='text' value={inputs.firstname} onChange={handleChange} fullWidth required autoFocus  />)}
+                    <Grid container sx={{ maxWidth: '40vw' }}>
+                        <Paper className={classes.paperStyle} elevation={10} sx={{ width: '100%' }}>
+                            <Box className={classes.scrollbar} sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 160px)' }}>
+                                <Grid align='center'>
+                                    <Avatar className={classes.avatarStyle}><LockOutlinedIcon /></Avatar>
+                                    <h2>{isSignup ? "Signup" : "Login"}</h2>
+                                </Grid>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        {isSignup && (<TextField margin="dense" label='Firstname' placeholder='Enter First Name' name="firstname" type='text' value={inputs.firstname} onChange={handleChange} fullWidth required autoFocus />)}
 
-                        {isSignup && (<TextField className={classes.m8}label='Lastname' placeholder='Enter Last Name' name="lastname" type='text' value={inputs.lastname} onChange={handleChange} fullWidth required />)}
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        {isSignup && (<TextField margin="dense" label='Lastname' placeholder='Enter Last Name' name="lastname" type='text' value={inputs.lastname} onChange={handleChange} fullWidth required />)}
 
-                        <TextField className={classes.m8} label="Username"  placeholder='Enter Username' type='text' name='username' value={inputs.username} onChange={handleChange} fullWidth required autoFocus />
-
-                        {isSignup && (<TextField className={classes.m8} label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />)}
-
-                        <TextField className={classes.m8} label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
-                        
-
-                        <Button type='submit' variant="contained" className={classes.m8} fullWidth>
-                            <Typography variant='h6'>{isSignup ? "Signup" : "Login"}</Typography>
-                        </Button>
-
-                        <Typography align='center' variant='h6'>or</Typography>
+                                    </Grid>
+                                </Grid>
 
 
-                        <Button variant="contained" onClick={resetState} className={classes.m8} fullWidth>
-                            <Typography variant='h6'>{isSignup ? "Login" : "Create Account"}</Typography>
-                        </Button>
-                    </Box>
-                    </Paper >
-                </Grid>
+                                <TextField margin="dense" label="Username" placeholder='Enter Username' type='text' name='username' value={inputs.username} onChange={handleChange} fullWidth required autoFocus />
+
+                                {isSignup && (<TextField margin="dense" label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />)}
+
+                                <TextField margin="dense" label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
+
+                                {isSignup && (<TextField margin="dense" label='Confirm Password' placeholder='Confirm Passworrd' type='password' name='password' value={inputs.confirmPassword} onChange={handleChange} fullWidth required />)}
+
+
+                                <Button type='submit' variant="contained" className={classes.m8} fullWidth>
+                                    <Typography variant='h6'>{isSignup ? "Signup" : "Login"}</Typography>
+                                </Button>
+
+                                <Typography align='center' variant='h6'>or</Typography>
+
+
+                                <Button variant="contained" onClick={resetState} className={classes.m8} fullWidth>
+                                    <Typography variant='h6'>{isSignup ? "Login" : "Create Account"}</Typography>
+                                </Button>
+                            </Box>
+                        </Paper >
+                    </Grid>
                 </Grid>
             </Box>
             {error && <ErrorHandler error={error} onClose={() => setError(null)} />}

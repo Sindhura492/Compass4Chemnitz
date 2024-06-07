@@ -102,28 +102,19 @@ const PlaceDetails = ({ selectedPlace, onClose }) => {
                                 primary={`${selectedPlace?.STRASSE} ${selectedPlace?.PLZ} ${selectedPlace?.ORT}`}
                                 primaryTypographyProps={{
                                     variant: 'body1',
-                                    color: 'secondary',
-                                    fontStyle: 'italic',
                                 }} />
                         </ListItem>
-                        <ListItemButton>
-
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <WorkIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary="Work" secondary="Jan 7, 2014" />
-                            </ListItem>
-                        </ListItemButton>
-                        <ListItem>
+                        <ListItem className={classes.listItem}>
                             <ListItemAvatar>
-                                <Avatar>
-                                    <BeachAccessIcon />
+                                <Avatar className={classes.listAvatar}>
+                                    <LocationOnOutlinedIcon fontSize='large' />
                                 </Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary="Vacation" secondary="July 20, 2014" />
+                            <ListItemText
+                                primary={`${selectedPlace?.STRASSE} ${selectedPlace?.PLZ} ${selectedPlace?.ORT}`}
+                                primaryTypographyProps={{
+                                    variant: 'body1',
+                                }} />
                         </ListItem>
                     </List>
                 </CardContent>

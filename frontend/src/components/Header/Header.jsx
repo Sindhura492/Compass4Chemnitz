@@ -5,6 +5,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from '@mui/material/Link';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
 
@@ -13,6 +14,7 @@ export default function Header() {
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const navigate = useNavigate();
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -31,6 +33,12 @@ export default function Header() {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
+    const navigateToUserAccount = () => {
+        setAnchorEl(null);
+        handleMobileMenuClose();
+        navigate('/user');
+    }
+
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
@@ -48,8 +56,8 @@ export default function Header() {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            {/* <MenuItem onClick={handleMenuClose}>Profile</MenuItem> */}
+            <MenuItem onClick={navigateToUserAccount}>My Account</MenuItem>
             <MenuItem onClick={handleMenuClose}><Link href="/logout" underline="none" color='inherit'>Logout</Link></MenuItem>
         </Menu>
     );

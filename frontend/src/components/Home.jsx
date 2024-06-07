@@ -1,25 +1,34 @@
 import { CssBaseline, Grid, ThemeProvider } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { theme } from "../utils/themeProvider";
 import Header from "./Header/Header";
 import Maps from "./Map/Maps";
+import Loader from "./Loader/Loader";
+import ErrorHandler from "./ErrorHandler/ErrorHandler";
 
 
 
 const Home = () => {
+    const [isLoading,setLoading]=useState(false);
+    const [error, setError] = useState(null);
+
+    const handleLoader = (value) => {
+        setLoading(value);
+      }
+    
+      const handleError = (error) => {
+        setError(error);
+      }
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
+            {isLoading && <Loader />}
             <Header />
-            <Maps />
-            {/* <Grid container spacing={3} style={{ width: '100%' }}>
-                <Grid item xs={12} md={4}>
-                    hhhhh
-                </Grid>
-                <Grid item xs={12} md={8}>
-                    kokko
-                </Grid>
-            </Grid> */}
+            <Maps loading={handleLoader}
+            error={handleError}/>
+
+            {error && <ErrorHandler error={error} onClose={() => setError(null)} />}
 
         </ThemeProvider>
     )

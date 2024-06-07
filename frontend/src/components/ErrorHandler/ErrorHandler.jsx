@@ -23,7 +23,7 @@ const ErrorHandler = ({ error }) => {
     return (
         <Snackbar
         open={open}
-        autoHideDuration={1000}
+        autoHideDuration={6000}
         onClose={handleClose}
       >
         {/* <Alert onClose={handleClose} severity='success' sx={{ width: '100%' }}>
