@@ -12,7 +12,7 @@ from django.conf import settings
 class AddressCreateView(APIView):
     def post(self, request, *args, **kwargs):
         api_key = settings.GOOGLE_MAPS_API_KEY
-        address_data = request.data
+        address_data = request.data.copy()
         
         address_string = f"{address_data.get('house_no', '')} {address_data.get('street_name', '')}, {address_data.get('city', '')}, {address_data.get('state', '')}, {address_data.get('country', '')}"
         geolocator = GoogleV3(api_key=api_key)
