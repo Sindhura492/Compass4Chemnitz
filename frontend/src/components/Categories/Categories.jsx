@@ -8,6 +8,7 @@ import api, { routes } from '../../api';
 import Loader from '../Loader/Loader';
 import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import { getResponseError } from '../../utils/errorUtils';
+import { generalJson } from '../../general';
 
 const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, loading, error }) => {
   const classes = useStyles();
@@ -21,8 +22,9 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
       loading(true)
       try {
         const res = await api.get(routes[selectedCategory.urlName]);
-        setPlaces(res.data);
-        markPlaces(res.data)
+        const updatedResponse = generalJson(res.data);
+        setPlaces(updatedResponse);
+        markPlaces(updatedResponse)
         setOpen(true)
       } catch(error) {
         const errorData = getResponseError(error);
@@ -32,7 +34,6 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
       }
     };
     if (selectedCategory) {
-      console.log(selectedCategory, "in if");
       fetchPlaces();
     }
   }, [selectedCategory]);
@@ -41,8 +42,6 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
     // setSelectedCategory('');
     setOpen(false);
   };
-
-  console.log("selectedCategory", selectedCategory);
 
   
 
@@ -62,21 +61,21 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
             <ListItem>
               <ListItemButton onClick={() => onPlaceSelect(place)}>
                 <ListItemText
-                  primary={place?.BEZEICHNUNG}
+                  primary={place?.DESCRIPTION}
                   secondary={
                     <>
                       <Typography component={'span'} variant="body2" color="text.primary">{place?.ART}</Typography><br />
-                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.STRASSE}</Typography><br />
-                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.TELEFON}</Typography><br />
+                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.STREET}</Typography><br />
+                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.PHONE}</Typography><br />
                     </>
                   }
                 />
               </ListItemButton>
-              <Tooltip title="Get Directions">
+              {/* <Tooltip title="Get Directions">
               <Avatar sx={{ bgcolor: '#2196f3' }}>
                 <DirectionsRoundedIcon style={{ cursor: 'pointer' }} />
               </Avatar>
-              </Tooltip>
+              </Tooltip> */}
             </ListItem>
             <Divider />
           </React.Fragment>

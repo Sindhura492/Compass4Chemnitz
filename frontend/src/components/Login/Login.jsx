@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import Header from '../Header/Header';
@@ -8,7 +8,7 @@ import { Avatar, Box, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider
 import useStyles from './styles';
 
 import api, { routes } from '../../api';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, REFRESH_TOKEN, USER_ID } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -39,6 +39,11 @@ const Login = () => {
 
     const [error, setError] = useState(null);
 
+    useEffect(() => {
+        localStorage.clear()
+      }, []);
+
+
     const handleChange = (e) => {
         setInputs((prevState) => ({
             ...prevState,
@@ -63,6 +68,7 @@ const Login = () => {
             if (!isSignup) {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access)
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
+                localStorage.setItem(USER_ID, res.data.user_id)
                 navigate('/')
             }
             else {
@@ -82,6 +88,7 @@ const Login = () => {
         setIsSignup(!isSignup);
         setInputs({ firstname: '', lastname: '', username: '', email: '', password: '' });
     }
+
 
     return (
         <ThemeProvider theme={theme}>

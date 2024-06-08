@@ -10,8 +10,6 @@ export const getResponseError = (error) => {
             message: resData.data,
             title: resData.statusText
         }
-
-        console.log(errorData, resData.status, resData.data);
         return errorData;
     }
 };

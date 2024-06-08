@@ -2,7 +2,6 @@ import { Backdrop, Box, CircularProgress, LinearProgress } from '@mui/material'
 import React from 'react'
 
 const Loader = () => {
-  console.log("into loader compoennt");
   return (
     // <Backdrop sx={{ color: 'black', opacity: 0.75 }} open>
     //       <CircularProgress color="secondary" />

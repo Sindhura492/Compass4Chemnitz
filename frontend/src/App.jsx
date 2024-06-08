@@ -6,6 +6,7 @@ import Login from "./components/Login/Login"
 import Home from "./components/Home"
 import Categories from "./components/Categories/Categories"
 import UserAccount from "./components/UserAccount/UserAccount"
+import Favourites from "./components/Favourites/Favourites"
 
 
 function Logout(){
@@ -24,6 +25,7 @@ function App() {
           <Route path='/logout' element={<Logout/>}/>
           <Route path='/categories' element={<ProtectedRoute><Categories/></ProtectedRoute>}/>
           <Route path='/user' element={<ProtectedRoute><UserAccount /></ProtectedRoute>} />
+          <Route path='/favourite' element={<ProtectedRoute><Favourites /></ProtectedRoute>} />
           <Route path='*' element={<NotFound/>}/>
       </Routes>
     </BrowserRouter>

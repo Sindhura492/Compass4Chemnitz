@@ -1,5 +1,6 @@
 export const ACCESS_TOKEN='access';
 export const REFRESH_TOKEN='refresh';
+export const USER_ID='user_id'
 export const categories=[
     {
         id: "schools",
@@ -23,9 +24,3 @@ export const categories=[
     },
 ]
 
-export const generateURL = (url, params) => {
-    console.log(url, params);
-    return url.replace(/:(\w+)/g, (match, key) => {
-        return params[key] !== undefined ? params[key] : match;
-      });
-}

@@ -26,13 +26,14 @@ const Maps = ({loading, error}) => {
   const [listOfPlaces, setListOfPlaces] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
-  const [cardClose, setCardClose] = useState(false)
+  const [cardClose, setCardClose] = useState(false);
 
   
 
   const handleCategoryClick = (category) => {
-    console.log(category, "category");
     setListOfPlaces(null);
+    setSelectedPin(null); // Update selected pin's data
+    setCardClose(false);
     setSelectedCategory(category);
   };
 
@@ -43,6 +44,8 @@ const Maps = ({loading, error}) => {
 
   const handlePlaceSelect = (place) => {
     setPlaces([place]);
+    console.log(place);
+    handlePinClick(place);
   };
 
   const showPlaces = (listOfPlaces) => {
@@ -66,7 +69,6 @@ const Maps = ({loading, error}) => {
 
   const handlePinClick = (place) => {
     setSelectedPin(place); // Update selected pin's data
-    console.log(selectedPin, place, "hellooo");
     setCardClose(true);
   };
 
@@ -129,7 +131,7 @@ const Maps = ({loading, error}) => {
           <Categories
             selectedCategory={selectedCategory}
             onClose={handleCloseSidebar}
-            onPlaceSelect={handlePlaceSelect}
+            onPlaceSelect={handlePinClick}
             markPlaces = {showPlaces}
             loading={loading}
             error={error}
@@ -140,8 +142,6 @@ const Maps = ({loading, error}) => {
           {categories.map((category) => (
               <Button variant="contained" onClick={() => handleCategoryClick(category)} key={category.id}>{category.displayname}</Button>
             ))}
-            {/* <Button variant="contained" onClick={() => handleCategoryClick('schools')}>Schools</Button>
-            <Button variant="contained" onClick={() => handleCategoryClick('kindergarden')}>Kindergarden</Button> */}
           </Box>
           <Map defaultZoom={12} defaultCenter={coordinates} mapId={mapId} options={mapOptions}>
             {listOfPlaces && listOfPlaces.map((place, index) => {

@@ -39,6 +39,10 @@ export default function Header() {
         navigate('/user');
     }
 
+    const navigateToHome = () => {
+        navigate('/');
+    }
+
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
@@ -82,7 +86,6 @@ export default function Header() {
             <MenuItem>
                 <IconButton
                     size="large"
-                    aria-label="show 17 new notifications"
                     color="inherit"
                 >
                     <Badge badgeContent={17} color="error">
@@ -94,7 +97,6 @@ export default function Header() {
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     size="large"
-                    aria-label="account of current user"
                     aria-controls="primary-search-account-menu"
                     aria-haspopup="true"
                     color="inherit"
@@ -106,34 +108,29 @@ export default function Header() {
         </Menu>
     );
 
+    const naviagteToFavourites = () => {
+        setAnchorEl(null);
+        handleMobileMenuClose();
+        navigate('/favourite');
+    }
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        sx={{ mr: 2 }}
-                    >
+                    {/* <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }} >
                         <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}
-                    >
+                    </IconButton> */}
+                    <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block', cursor: 'pointer' } }} onClick={navigateToHome} >
                         Compass4Chemnitz
                     </Typography>
 
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" aria-label="show 17 new notifications" color="inherit" >
-                            <Badge badgeContent={17} color="error">
+                        <IconButton size="large" aria-label="show 17 new notifications" color="inherit"  onClick={naviagteToFavourites}>
+                            {/* <Badge badgeContent={17} color="error"> */}
                                 <FavoriteIcon />
-                            </Badge>
+                            {/* </Badge> */}
                         </IconButton>
                         <IconButton size="large" edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit" >
                             <AccountCircle />
