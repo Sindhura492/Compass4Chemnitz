@@ -8,6 +8,9 @@ export const theme = createTheme({
       },
       secondary: {
         main: colors.amber[200]
+      },
+      background: {
+        default: colors.orange[50]
       }
     }
   });

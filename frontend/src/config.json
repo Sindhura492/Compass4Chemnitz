@@ -6,7 +6,10 @@
         "getSchools": "/api/schulen/",
         "getKindergarden":  "/api/kindergartens/",
         "getSocialChildProjects": "/api/schulsozialarbeits/",
-        "getSocialTeenagerProjects": "/api/jugendberufshilfens/"
+        "getSocialTeenagerProjects": "/api/jugendberufshilfens/",
+        "getUserInfo": "/api/user-info/:id/",
+        "getAddress": "/api/user-addresses/:id/",
+        "saveAddress": "/api/add-address/"
 
     }
 }

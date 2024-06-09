@@ -1,14 +1,15 @@
 export const ACCESS_TOKEN='access';
 export const REFRESH_TOKEN='refresh';
+export const USER_ID='user_id'
 export const categories=[
     {
         id: "schools",
-        displayname: "School",
+        displayname: "Schools",
         urlName: "getSchools"
     },
     {
         id: "kindergarden",
-        displayname: "Kindergarden",
+        displayname: "Kindergardens",
         urlName: 'getKindergarden'
     },
     {
@@ -22,3 +23,4 @@ export const categories=[
         urlName: 'getSocialTeenagerProjects'
     },
 ]
+

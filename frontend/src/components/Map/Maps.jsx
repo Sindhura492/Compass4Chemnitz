@@ -1,64 +1,56 @@
 // import GoogleMapReact from 'google-map-react';
-"use client";
+// "use client";
 import React, { useEffect, useState } from 'react';
 import useStyles from './styles';
-import { Box, Button, ButtonGroup, Drawer, IconButton, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Card, CardContent, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, Rating, Tooltip, Typography } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
 import CloseIcon from '@mui/icons-material/Close';
 import { categories } from '../../constants';
 import api, { routes } from '../../api';
+import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
+import Categories from '../Categories/Categories';
+import PlaceDetails from '../PlaceDetails/PlaceDetails';
 
-const Maps = () => {
+const Maps = ({loading, error}) => {
   const classes = useStyles();
   const coordinates = { lat: 50.827847, lng: 12.921370 };
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  // console.log(googleMapsApiKey);
-
   const mapId = import.meta.env.VITE_MAP_ID;
-
-  const trees = [
-    [1, "Ash, green", 43.6495364521731, -79.41618733111581],
-    [2, "Birch, white", 443.8837189558964, -79.3545349538418],
-    [3, "pine", 43.6832688003495, -79.3044252718078]
-  ]
 
   const mapOptions = {
     mapTypeControl: false,  // Disable Map/Satellite control
   };
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState(null);
+  const [listOfPlaces, setListOfPlaces] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [cardClose, setCardClose] = useState(false);
 
-  const fetchPlaces = async (category) => {
-    setSelectedCategory(category.id);
-    const res=await api.get(routes[category.urlName]);
-    console.log(res.data);
-    setPlaces(res.data);
-    setIsSidebarOpen(true);
+  
+
+  const handleCategoryClick = (category) => {
+    setListOfPlaces(null);
+    setSelectedPin(null); // Update selected pin's data
+    setCardClose(false);
+    setSelectedCategory(category);
   };
 
-  const fetchSchools = (data) => {
-  }
-
-  const renderPlacesList = () => {
-    console.log("hihihih");
-    if(places){
-      places.map((place) => {
-      console.log("ssss", place.X, place.Y);
-    })
-  }
-  console.log("Byyeee");
-    return (
-      <List className={classes.list}>
-        {places.map((place, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={place?.PLZ} secondary={place?.TELEFON} />
-          </ListItem>
-        ))}
-      </List>
-    )
+  const handleCloseSidebar = () => {
+    // setSelectedCategory('');
+    setOpen(false);
   };
+
+  const handlePlaceSelect = (place) => {
+    setPlaces([place]);
+    console.log(place);
+    handlePinClick(place);
+  };
+
+  const showPlaces = (listOfPlaces) => {
+    setListOfPlaces(listOfPlaces);
+  }
 
   const getPinStyle = (category) => {
     switch (category) {
@@ -75,34 +67,96 @@ const Maps = () => {
     }
   };
 
+  const handlePinClick = (place) => {
+    setSelectedPin(place); // Update selected pin's data
+    setCardClose(true);
+  };
+
+  const handleCardClose = () => {
+    // setSelectedCategory('');
+    setCardClose(false);
+  };
+
+  const renderPlaceDetails = () => {
+    return (
+      <>
+      {cardClose && <Box className={classes.placeDetailsCard}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              {selectedPin?.BEZEICHNUNG}
+              <IconButton onClick={handleCardClose} className={classes.closeButton}>
+          <CloseIcon />
+        </IconButton>
+
+            </Typography>
+            <Rating value={2} readOnly precision={0.5} />
+            <Typography variant="body2" color="text.secondary">
+              {selectedPin?.TELEFON}
+            </Typography>
+            {/* Add buttons or links for reviews, directions, etc. */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <IconButton aria-label="Reviews">
+                {/* Add icon component (e.g., <ReviewsIcon />) */}
+              </IconButton>
+              <IconButton aria-label="Directions">
+                <DirectionsRoundedIcon />
+              </IconButton>
+            </Box>
+            {/* Add buttons for Dine-in, Takeaway, Delivery */}
+            <Box sx={{ display: 'flex', mt: 1 }}>
+              <IconButton aria-label="Dine-in">
+                {/* Add icon component (e.g., <RestaurantIcon />) */}
+              </IconButton>
+              <IconButton aria-label="Takeaway">
+                {/* Add icon component */}
+              </IconButton>
+              <IconButton aria-label="Delivery">
+                {/* Add icon component */}
+              </IconButton>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>}
+      
+      </>
+    );
+  }
 
   return (
+    
     <APIProvider apiKey={googleMapsApiKey}>
-      <Box className={classes.root}>
-      <Box className={`${classes.sidebar} ${isSidebarOpen ? classes.sidebarOpen : ''}`}>
-        <Box className={classes.drawerHeader}>
-          <IconButton onClick={() => setIsSidebarOpen(false)} className={classes.closeButton}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        {renderPlacesList()}
-      </Box>
+      <Box className={classes.map}>
+        {selectedCategory && (
+          <Categories
+            selectedCategory={selectedCategory}
+            onClose={handleCloseSidebar}
+            onPlaceSelect={handlePinClick}
+            markPlaces = {showPlaces}
+            loading={loading}
+            error={error}
+          />
+        )}
         <Box className={classes.mapContainer}>
           <Box className={classes.buttonContainer}>
-            {categories.map((category) => (
-              <Button variant="contained" onClick={() => fetchPlaces(category)}>{category.displayname}</Button>
+          {categories.map((category) => (
+              <Button variant="contained" onClick={() => handleCategoryClick(category)} key={category.id}>{category.displayname}</Button>
             ))}
           </Box>
           <Map defaultZoom={12} defaultCenter={coordinates} mapId={mapId} options={mapOptions}>
-            {places.map((place) => {
-              const pinStyle = getPinStyle(selectedCategory); // Assuming each place has a category property
+            {listOfPlaces && listOfPlaces.map((place, index) => {
+              const pinStyle = getPinStyle(selectedCategory.id);
               return (
-                <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={place.ID}>
+                <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={index} onClick={() => handlePinClick(place)}>
                   <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />
                 </AdvancedMarker>
               );
+
             })}
           </Map>
+          {/* {selectedPin && cardClose && renderPlaceDetails()} */}
+
+          {selectedPin && cardClose && (<PlaceDetails onClose={handleCardClose} selectedPlace={selectedPin}/>)}
         </Box>
       </Box>
     </APIProvider>
