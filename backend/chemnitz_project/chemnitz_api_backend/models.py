@@ -58,7 +58,7 @@ class UserAddress(models.Model):
     longitude = models.FloatField(blank=True)
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     category=models.IntegerField(blank=True, null=True)
     item=models.IntegerField(blank=True, null=True)
     TRAEGER = models.CharField(max_length=300, blank=True, null=True)
