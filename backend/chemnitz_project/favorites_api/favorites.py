@@ -95,7 +95,7 @@ class FavoriteView(APIView):
         try:
             favorite = Favorite.objects.get(user=user_id, category=category, item=item)
             favorite.delete()
-            return Response({'detail': 'Favorite deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'Favorite deleted successfully'}, status=status.HTTP_200_OK)
         except Favorite.DoesNotExist:
             return Response({'detail': 'Favorite not found'}, status=status.HTTP_404_NOT_FOUND)
         
