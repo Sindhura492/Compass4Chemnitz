@@ -75,4 +75,4 @@ class AddressView(APIView):
             return Response({"detail": "Address not found."}, status=status.HTTP_404_NOT_FOUND)
 
         address.delete()
-        return Response({"detail":"Address deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail":"Address deleted successfully!"}, status=status.HTTP_200_OK)
