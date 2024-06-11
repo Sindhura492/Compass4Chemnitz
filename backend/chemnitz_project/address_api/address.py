@@ -50,7 +50,7 @@ class AddressView(APIView):
     
     def get(self, request, user_id, *args, **kwargs):
         if not UserAddress.objects.filter(user_id=user_id).exists():
-            return Response({"detail": "Please add atleast one  address to calculate distances.."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Please add atleast one address to calculate distances.."}, status=status.HTTP_400_BAD_REQUEST)
         addresses = UserAddress.objects.filter(user=user_id)
         serializer = AddressSerializer(addresses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
