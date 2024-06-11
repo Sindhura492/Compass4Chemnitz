@@ -4,6 +4,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from chemnitz_api_backend.models import Kindergarten
+from django.core.exceptions import MultipleObjectsReturned
 
 class Command(BaseCommand):
     help = 'Updates the Kindergarten model every 5 minutes'
@@ -41,7 +42,7 @@ class Command(BaseCommand):
                     existing_object = Kindergarten.objects.get(OBJECTID=object_id)
                     print(f"Object with OBJECTID {object_id} already exists. Skipping...")
                 except ObjectDoesNotExist:
-                        new_object = Kindergarten.objects.create(
+                    new_object = Kindergarten.objects.create(
                         X=x,
                         Y=y,
                         OBJECTID=object_id,
@@ -62,6 +63,8 @@ class Command(BaseCommand):
                         BARRIEREFREI=attributes.get('BARRIEREFREI', True),
                         INTEGRATIV=attributes.get('INTEGRATIV', True),
                     )
-                print("New object created in Kindergarten")
+                    print("New object created in Kindergarten")
+                except MultipleObjectsReturned:
+                    print(f"Multiple objects returned for OBJECTID {object_id}. Skipping...")
         else:
             print("No features found in the fetched data")

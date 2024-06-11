@@ -4,6 +4,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from chemnitz_api_backend.models import Schulsozialarbeit
+from django.core.exceptions import MultipleObjectsReturned
 
 class Command(BaseCommand):
     help = 'Updates the Schulsozialarbeit model every 5 minutes'
@@ -57,5 +58,7 @@ class Command(BaseCommand):
                         FAX=attributes.get('FAX', ''),
                     )
                     print("New object created in Schulsozialarbeit")
+                except MultipleObjectsReturned:
+                    print(f"Multiple objects returned for OBJECTID {object_id}. Skipping...")
         else:
             print("No features found in the fetched data")

@@ -4,6 +4,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from chemnitz_api_backend.models import Jugendberufshilfen
+from django.core.exceptions import MultipleObjectsReturned
 
 class Command(BaseCommand):
     help = 'Updates the Jugendberufshilfen model every 5 minutes'
@@ -41,7 +42,7 @@ class Command(BaseCommand):
                     existing_object = Jugendberufshilfen.objects.get(OBJECTID=object_id)
                     print(f"Object with OBJECTID {object_id} already exists. Skipping...")
                 except ObjectDoesNotExist:
-                        new_object = Jugendberufshilfen.objects.create(
+                    new_object = Jugendberufshilfen.objects.create(
                         X=x,
                         Y=y,
                         OBJECTID=object_id,
@@ -56,6 +57,8 @@ class Command(BaseCommand):
                         EMAIL=attributes.get('EMAIL', ''),
                         FAX=attributes.get('FAX', ''),
                     )
-                print("New object created in Jugendberufshilfen")
+                    print("New object created in Jugendberufshilfen")
+                except MultipleObjectsReturned:
+                    print(f"Multiple objects returned for OBJECTID {object_id}. Skipping...")
         else:
             print("No features found in the fetched data")

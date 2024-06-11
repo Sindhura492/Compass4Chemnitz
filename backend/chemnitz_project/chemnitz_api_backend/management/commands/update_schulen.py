@@ -4,6 +4,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from chemnitz_api_backend.models import Schulen
+from django.core.exceptions import MultipleObjectsReturned
 
 class Command(BaseCommand):
     help = 'Updates the Schulen model every 5 minutes'
@@ -73,5 +74,7 @@ class Command(BaseCommand):
                         Editor=attributes.get('Editor', ''),
                     )
                     print("New object created in Schulen")
+                except MultipleObjectsReturned:
+                    print(f"Multiple objects returned for OBJECTID {object_id}. Skipping...")
         else:
             print("No features found in the fetched data")
