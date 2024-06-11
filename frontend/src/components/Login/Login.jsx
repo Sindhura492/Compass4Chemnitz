@@ -75,7 +75,7 @@ const Login = () => {
                 navigate('/')
             }
             else {
-                const errorData = getResponseInfo(error);
+                const errorData = getResponseInfo(res);
                 setError(errorData);
                 navigate('/login');
                 setIsSignup(false);

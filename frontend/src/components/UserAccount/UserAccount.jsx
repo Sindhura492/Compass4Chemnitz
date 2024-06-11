@@ -77,7 +77,7 @@ const UserAccount = () => {
             // console.log(`"${errorData?.message?.detail}"`);
             // console.log(`"${'Please add atleast one address to calculate distances..'}"`);
 
-            if (errorData?.message?.detail != 'Please add atleast one  address to calculate distances..') {
+            if (errorData?.message?.detail != 'Please add atleast one address to calculate distances..') {
                 setError(errorData);
             }
         } finally {
@@ -87,9 +87,9 @@ const UserAccount = () => {
 
     const setDefaultSwitchValue = (data) => {
         if (data.role === '1') {
-            setIsSuperUser(false);
-        } else {
             setIsSuperUser(true);
+        } else {
+            setIsSuperUser(false);
         }
     }
 
