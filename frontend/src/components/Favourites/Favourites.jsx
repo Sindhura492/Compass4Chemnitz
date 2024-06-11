@@ -11,7 +11,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import CallIcon from '@mui/icons-material/Call';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import CategoryIcon from '@mui/icons-material/Category';
-
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useNavigate } from 'react-router-dom';
 
 const Favourites = () => {
     const [isLoading, setLoading] = useState(false);
@@ -21,6 +22,8 @@ const Favourites = () => {
 
 
     const userId = localStorage.getItem('user_id');
+    const navigate = useNavigate();
+
 
     const getFavourites = async () => {
         setLoading(true);
@@ -70,22 +73,33 @@ const Favourites = () => {
         }
     }
 
+    const naviagteToHome = () => {
+        navigate('/');
+    }
+
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header isLoginPage={false}/>
+            <Header isLoginPage={false} />
 
             {!isLoading && <Container maxWidth="md" sx={{ p: 3 }}>
-                <Typography variant="h5" gutterBottom> Favourites </Typography>
+                <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
+                    <IconButton size="small">
+                        <ArrowBackIosNewIcon onClick={naviagteToHome} />
+                    </IconButton>
+                    <Typography variant="h5">
+                        Favourites
+                    </Typography>
+                </Box>
 
                 {!favDetails && (
                     <Card sx={{ mt: 2, backgroundColor: 'secondary.main' }} >
-                            <CardHeader
-                                title={noFav?.message?.detail}
-                                titleTypographyProps={{ variant: 'h6', style: { fontSize: '20px' } }}
-                            />
+                        <CardHeader
+                            title={noFav?.message?.detail}
+                            titleTypographyProps={{ variant: 'body1', style: { fontSize: '20px' } }}
+                        />
                     </Card>
                 )}
                 {favDetails && favDetails.map((item, index) => {

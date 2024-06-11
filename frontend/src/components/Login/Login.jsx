@@ -26,16 +26,15 @@ const Login = () => {
         username: '',
         email: '',
         password: '',
-        confirmPassword: '',
-        house_no: '',
-
+        confirmPassword: ''
     });
 
     const [error, setError] = useState(null);
+    const [passwordError, setPasswordError] = useState(null);
 
     useEffect(() => {
         localStorage.clear()
-      }, []);
+    }, []);
 
 
     const handleChange = (e) => {
@@ -44,11 +43,21 @@ const Login = () => {
             [e.target.name]: e.target.value
         }))
         setError(null);
+        if(e.target.name === 'confirmPassword'){
+            setPasswordError(null);
+        }
     }
 
     const handleSubmit = async (e) => {
-        setLoading(true)
         e.preventDefault()
+
+        // Password validation for signup
+        if (isSignup && inputs.password !== inputs.confirmPassword) {
+            setPasswordError("Passwords do not match");
+            return;
+        }
+
+        setLoading(true)
         try {
             const route = isSignup ? routes.register : routes.login;
             const data = {
@@ -84,6 +93,7 @@ const Login = () => {
         setIsSignup(!isSignup);
         setInputs({ firstname: '', lastname: '', username: '', email: '', password: '' });
         setError(null);
+        setPasswordError(null);
     }
 
 
@@ -91,7 +101,7 @@ const Login = () => {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header isLoginPage={true}/>
+            <Header isLoginPage={true} />
 
             <Box component="form" onSubmit={handleSubmit}>
                 <Grid container className={classes.background} sx={{ minHeight: '100vh' }}>
@@ -120,7 +130,7 @@ const Login = () => {
 
                                 <TextField margin="dense" label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
 
-                                {isSignup && (<TextField margin="dense" label='Confirm Password' placeholder='Confirm Passworrd' type='password' name='password' value={inputs.confirmPassword} onChange={handleChange} fullWidth required />)}
+                                {isSignup && (<TextField margin="dense" label='Confirm Password' placeholder='Confirm Passworrd' type='password' name='confirmPassword' value={inputs.confirmPassword} onChange={handleChange} fullWidth required error={!!passwordError} helperText={passwordError}/>)}
 
 
                                 <Button type='submit' variant="contained" className={classes.m8} fullWidth>

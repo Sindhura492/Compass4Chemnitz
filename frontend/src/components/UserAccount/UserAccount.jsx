@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Header/Header'
 import { Box, Button, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormHelperText, IconButton, Paper, Switch, TextField, ThemeProvider, Tooltip, Typography } from '@mui/material'
-import { theme } from '../../utils/themeProvider'
-import useStyles from './styles'
 import api, { routes } from '../../api';
 import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
 import Loader from '../Loader/Loader';
@@ -10,7 +8,10 @@ import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import { generateURL } from '../../general';
 import { useNavigate } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+import { theme } from '../../utils/themeProvider'
+import useStyles from './styles'
 
 const UserAccount = () => {
     const classes = useStyles();
@@ -217,17 +218,26 @@ const UserAccount = () => {
         }
     };
 
+    const naviagteToHome = () => {
+        navigate('/');
+    }
+
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header isLoginPage={false}/>
+            <Header isLoginPage={false} />
 
             {!isLoading && <Container maxWidth="md" sx={{ p: 3 }}>
-                <Typography variant="h5" gutterBottom>
-                    Account Settings
-                </Typography>
+                <Box display="flex" alignItems="center" sx={{mb: 1}}>
+                    <IconButton size="small">
+                        <ArrowBackIosNewIcon onClick={naviagteToHome}/>
+                    </IconButton>
+                    <Typography variant="h5">
+                        Account Settings
+                    </Typography>
+                </Box>
                 <Paper elevation={3} sx={{ p: 3, bgcolor: 'secondary.main' }}>
                     {/* <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}> */}
@@ -275,7 +285,7 @@ const UserAccount = () => {
                                 label="Super User"
                                 sx={{ m: 0 }}
                             />
-                            <Tooltip title="Switch user enables user to add more addresses." arrow enterTouchDelay={0}  leaveTouchDelay={3000}>
+                            <Tooltip title="Switch user enables user to add more addresses." arrow enterTouchDelay={0} leaveTouchDelay={3000}>
                                 <IconButton size="small" className={classes.switchIconPosition} >
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
