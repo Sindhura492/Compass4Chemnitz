@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Header/Header'
-import { Box, Button, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, Paper, TextField, ThemeProvider, Typography } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormHelperText, IconButton, Paper, Switch, TextField, ThemeProvider, Tooltip, Typography } from '@mui/material'
 import { theme } from '../../utils/themeProvider'
 import useStyles from './styles'
 import api, { routes } from '../../api';
-import { getResponseError } from '../../utils/errorUtils';
+import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
 import Loader from '../Loader/Loader';
 import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import { generateURL } from '../../general';
+import { useNavigate } from 'react-router-dom';
+import InfoIcon from '@mui/icons-material/Info';
+
 
 const UserAccount = () => {
     const classes = useStyles();
@@ -17,7 +19,7 @@ const UserAccount = () => {
 
     const [userDetails, setUserDetails] = useState(null);
     const [address, setAddress] = useState(null);
-    
+
     const [open, setOpen] = useState(false);
     const [addAddress, setAddAddress] = useState({
         houseNo: '',
@@ -32,42 +34,63 @@ const UserAccount = () => {
     });
 
     const [isValid, setIsValid] = useState(false);
-    
+    const [isSuperUser, setIsSuperUser] = useState(false);
+
+
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [tempSuperUser, setTempSuperUser] = useState(false);
+
     const userId = localStorage.getItem('user_id');
+    const navigate = useNavigate();
+
 
 
 
     useEffect(() => {
-        const getUserDetails = async () => {
-            setLoading(true);
-            try {
-                const userUrl = generateURL(routes.getUserInfo, { id: userId });
-                const res = await api.get(userUrl);
-                setUserDetails(res.data);
-            } catch (error) {
-                const errorData = getResponseError(error);
-                setError(errorData);
-            } finally {
-                // setLoading(false);
-            }
-        };
-
-        const getAddressDetails = async () => {
-            try {
-                const addressUrl = generateURL(routes.getAddress, { id: userId });
-                const addRes = await api.get(addressUrl);
-                setAddress(addRes.data);
-            } catch (error) {
-                const errorData = getResponseError(error);
-                setError(errorData);
-            } finally {
-                setLoading(false);
-            }
-        };
         getUserDetails();
         getAddressDetails();
     }, []);
 
+    const getUserDetails = async () => {
+        setLoading(true);
+        try {
+            const userUrl = generateURL(routes.getUserInfo, { id: userId });
+            const res = await api.get(userUrl);
+            setUserDetails(res.data);
+            setDefaultSwitchValue(res.data)
+        } catch (error) {
+            const errorData = getResponseError(error);
+            setError(errorData);
+        } finally {
+        }
+    };
+
+    const getAddressDetails = async () => {
+        setLoading(true);
+        try {
+            const addressUrl = generateURL(routes.getAddress, { id: userId });
+            const addRes = await api.get(addressUrl);
+            setAddress(addRes.data);
+        } catch (error) {
+            const errorData = getResponseError(error);
+            // console.log(`"${errorData?.message?.detail}"`);
+            // console.log(`"${'Please add atleast one address to calculate distances..'}"`);
+
+            if (errorData?.message?.detail != 'Please add atleast one  address to calculate distances..') {
+                setError(errorData);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const setDefaultSwitchValue = (data) => {
+        if (data.role === '1') {
+            setIsSuperUser(false);
+        } else {
+            setIsSuperUser(true);
+        }
+    }
 
 
 
@@ -98,26 +121,12 @@ const UserAccount = () => {
             }
             const saveAddress = generateURL(routes.saveAddress);
             const saveRes = await api.post(saveAddress, data);
-            await getAddressDetailsAgain();
+            await getAddressDetails();
         } catch (error) {
             const errorData = getResponseError(error);
             setError(errorData);
         }
         handleClose();
-    };
-
-    const getAddressDetailsAgain = async () => {
-        setLoading(true);
-        try {
-            const addressUrl = generateURL(routes.getAddress, { id: userId });
-            const addRes = await api.get(addressUrl);
-            setAddress(addRes);
-        } catch (error) {
-            const errorData = getResponseError(error);
-            setError(errorData);
-        } finally {
-            setLoading(false);
-        }
     };
 
 
@@ -152,24 +161,77 @@ const UserAccount = () => {
 
     }
 
-    const deleteAddress = (addressDelete, index) => {
+    const deleteUser = async () => {
+        setLoading(true);
+        try {
+            const deactivateAccountUrl = generateURL(routes.deactivateUser, { id: userId });
+            let res = await api.put(deactivateAccountUrl);
+            const errorData = getResponseError(res);
+            setError(res);
+        } catch (error) {
+            const errorData = getResponseError(error);
+            setError(errorData);
+        } finally {
+            navigate('/logout')
+        }
 
     }
+
+    const triggerChangeRoleApi = async (value) => {
+        setLoading(true);
+        try {
+            const changeRoleUrl = generateURL(routes.changeRole, { id: userId });
+            let res = await api.put(changeRoleUrl);
+            const response = getResponseInfo(res);
+            setError(response);
+            setUserDetails(res?.data?.data);
+        } catch (error) {
+            const errorData = getResponseError(error);
+            setError(errorData);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleSwitchChange = (event) => {
+        const targetValue = event.target.checked;
+
+        if (targetValue) {
+            // Turn on the switch and trigger the API
+            setIsSuperUser(targetValue);
+            triggerChangeRoleApi();
+        } else {
+            // Show the dialog when switching off
+            setTempSuperUser(targetValue);
+            setDialogOpen(true);
+        }
+    };
+
+    const handleDialogClose = (confirmed) => {
+        setDialogOpen(false);
+        if (confirmed) {
+            setIsSuperUser(tempSuperUser);
+            triggerChangeRoleApi();
+        } else {
+            setIsSuperUser(!tempSuperUser);
+        }
+    };
+
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header />
+            <Header isLoginPage={false}/>
 
-            {!isLoading && <Container maxWidth="md" sx={{ p: 3, mt: 5 }}>
+            {!isLoading && <Container maxWidth="md" sx={{ p: 3 }}>
                 <Typography variant="h5" gutterBottom>
                     Account Settings
                 </Typography>
-                <Paper elevation={3} sx={{ p: 3, mt: 5 , bgcolor: 'secondary.main'}}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            {/* <Box display="flex" alignItems="center">
+                <Paper elevation={3} sx={{ p: 3, bgcolor: 'secondary.main' }}>
+                    {/* <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}> */}
+                    {/* <Box display="flex" alignItems="center">
                                 <Avatar alt="Thomas Smith" src="/path/to/profile-image.jpg" sx={{ width: 80, height: 80, mr: 2 }} />
                                 <Box>
                                     <Typography variant="h6">Thomas Smith</Typography>
@@ -177,81 +239,138 @@ const UserAccount = () => {
                                     <Button startIcon={<EditIcon />} size="small" color="primary">Edit</Button>
                                 </Box>
                             </Box> */}
-                            <Box>
-                                <Typography variant="h6" gutterBottom>
-                                    Personal Information
-                                </Typography>
-                                <Box>
-                                    <TextField fullWidth label="First Name" defaultValue={userDetails?.first_name} margin="dense" disabled />
-                                    <TextField fullWidth label="Last Name" defaultValue={userDetails?.last_name} margin="dense" disabled />
-                                    <TextField fullWidth label="Email" defaultValue={userDetails?.email} margin="dense" disabled />
-                                    <TextField fullWidth label="Username" defaultValue={userDetails?.user_name} margin="dense" disabled />
-                                    {/* <TextField fullWidth label="Password" defaultValue="+1 817 718 8273" margin="dense" disabled /> */}
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            {address && <Box mt={{ xs: 2, sm: 0 }}>
-                                <Typography variant="h6" gutterBottom>
-                                    Address
-                                </Typography>
-                                {address && address?.map((add, index) => (
-                                    <Box key={index}>
-                                        <Box display="flex" justifyContent="space-between" alignItems="center">
-                                            <Typography variant="body1" gutterBottom>
-                                                {`Address ${index + 1}`}
-                                            </Typography>
-                                            <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={deleteAddress(add, index)}>Delete</Button>
-                                        </Box>
-                                        <TextField margin="dense" label='House No' defaultValue={add.house_no} fullWidth disabled />
-                                        <TextField margin="dense" label='Street Name' defaultValue={add.street_name} fullWidth disabled />
-                                        <TextField margin="dense" label='City' defaultValue={add.city} fullWidth disabled />
-                                        <TextField margin="dense" label='State' defaultValue={add.state} fullWidth disabled />
-                                        <TextField margin="dense" label='Country' defaultValue={add.country} fullWidth disabled />
-
-                                    </Box>
-                                ))}
-                            </Box>
-                            }
-                            {!address && <Box>
-                                <Typography variant="h6" gutterBottom> Address </Typography>
-                                <Typography variant="body1" gutterBottom> No Address Added </Typography>
-                            </Box>}
-
-                            <Button variant="contained" color="primary" onClick={handleClickOpen}>
-                                Add Address
+                    <Box>
+                        <Typography variant="h6" gutterBottom>
+                            Personal Information
+                        </Typography>
+                        <Box>
+                            <TextField fullWidth label="First Name" defaultValue={userDetails?.first_name} margin="dense" disabled />
+                            <TextField fullWidth label="Last Name" defaultValue={userDetails?.last_name} margin="dense" disabled />
+                            <TextField fullWidth label="Email" defaultValue={userDetails?.email} margin="dense" disabled />
+                            <TextField fullWidth label="Username" defaultValue={userDetails?.user_name} margin="dense" disabled />
+                            <Button variant="contained" onClick={deleteUser} color="primary" sx={{ mt: 1 }}>
+                                Delete Account
                             </Button>
-                            <Dialog open={open} onClose={handleClose}>
-                                <DialogTitle>Add Address</DialogTitle>
-                                <DialogContent>
-                                    <Box>
-                                        <FormControl fullWidth error={!!addAddress.houseNo} margin="dense">
-                                            <TextField autoFocus label="House No." placeholder="Enter House No" name="houseNo" type="text" value={addAddress.houseNo} onChange={handleChange} required />
-                                            {addressError.houseNo && (
-                                                <FormHelperText>{addressError.houseNo}</FormHelperText>
-                                            )}
-                                        </FormControl>
-                                        <TextField margin="dense" label='Street Name' placeholder='Enter Street Name' name="streetName" type='text' value={addAddress.streetName} onChange={handleChange} fullWidth required />
-                                        <TextField margin="dense" label='City' placeholder='Enter City' name="city" type='text' value={addAddress.city} fullWidth required disabled />
-                                        <TextField margin="dense" label='State' placeholder='Enter State' name="state" type='text' value={addAddress.state} fullWidth required disabled />
-                                        <TextField margin="dense" label='Country' placeholder='Enter Country' name="country" type='text' value={addAddress.country} fullWidth required disabled />
-                                    </Box>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose} color="primary">
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={handleSaveAddress} color="primary" disabled={!isValid}>
-                                        Save
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </Grid>
-                    </Grid>
+                            {/* <TextField fullWidth label="Password" defaultValue="+1 817 718 8273" margin="dense" disabled /> */}
+                        </Box>
+                    </Box>
+                    {/* </Grid> */}
+                    {/* <Grid item xs={12} sm={6}> */}
+
+                    {/* </Grid>
+                    </Grid> */}
+                </Paper>
+
+
+                <Paper elevation={3} sx={{ p: 3, mt: 2, bgcolor: 'secondary.main' }}>
+                    {address && <Box>
+                        <Typography variant="h6" gutterBottom>
+                            Address
+                        </Typography>
+                        <Box className={classes.switchBox}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={isSuperUser} onChange={handleSwitchChange} name="superUser" />
+                                }
+                                label="Super User"
+                                sx={{ m: 0 }}
+                            />
+                            <Tooltip title="Switch user enables user to add more addresses." arrow enterTouchDelay={0}  leaveTouchDelay={3000}>
+                                <IconButton size="small" className={classes.switchIconPosition} >
+                                    <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+
+                        {address && address?.map((add, index) => (
+                            <Box key={index}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="body1" gutterBottom>
+                                        {`Address ${index + 1}`}
+                                    </Typography>
+                                    {/* <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={deleteAddress(add, index)}>Delete</Button> */}
+                                </Box>
+                                <TextField margin="dense" label='House No' defaultValue={add.house_no} fullWidth disabled />
+                                <TextField margin="dense" label='Street Name' defaultValue={add.street_name} fullWidth disabled />
+                                <TextField margin="dense" label='City' defaultValue={add.city} fullWidth disabled />
+                                <TextField margin="dense" label='State' defaultValue={add.state} fullWidth disabled />
+                                <TextField margin="dense" label='Country' defaultValue={add.country} fullWidth disabled />
+
+                            </Box>
+                        ))}
+                    </Box>
+                    }
+                    {!address && <Box>
+                        <Typography variant="h6" gutterBottom> Address </Typography>
+                        <Box className={classes.switchBox}>
+                            <FormControlLabel
+                                control={
+                                    <Switch checked={isSuperUser} onChange={handleSwitchChange} name="superUser" />
+                                }
+                                label="Super User"
+                                sx={{ m: 0 }}
+                            />
+                            <Tooltip title="This switch grants super user privileges." arrow enterTouchDelay={0}>
+                                <IconButton size="small" className={classes.switchIconPosition} >
+                                    <InfoIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                        <Typography variant="body1" gutterBottom> No Address Added </Typography>
+                    </Box>}
+
+                    <Button variant="contained" color="primary" onClick={handleClickOpen}>
+                        Add Address
+                    </Button>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Add Address</DialogTitle>
+                        <DialogContent>
+                            <Box>
+                                <FormControl fullWidth error={!!addAddress.houseNo} margin="dense">
+                                    <TextField autoFocus label="House No." placeholder="Enter House No" name="houseNo" type="text" value={addAddress.houseNo} onChange={handleChange} required />
+                                    {addressError.houseNo && (
+                                        <FormHelperText>{addressError.houseNo}</FormHelperText>
+                                    )}
+                                </FormControl>
+                                <TextField margin="dense" label='Street Name' placeholder='Enter Street Name' name="streetName" type='text' value={addAddress.streetName} onChange={handleChange} fullWidth required />
+                                <TextField margin="dense" label='City' placeholder='Enter City' name="city" type='text' value={addAddress.city} fullWidth required disabled />
+                                <TextField margin="dense" label='State' placeholder='Enter State' name="state" type='text' value={addAddress.state} fullWidth required disabled />
+                                <TextField margin="dense" label='Country' placeholder='Enter Country' name="country" type='text' value={addAddress.country} fullWidth required disabled />
+                            </Box>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} color="primary">
+                                Cancel
+                            </Button>
+                            <Button onClick={handleSaveAddress} color="primary" disabled={!isValid}>
+                                Save
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={dialogOpen}
+                        onClose={() => handleDialogClose(false)}
+                    >
+                        <DialogTitle id="alert-dialog-title">{"Confirm Action"}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                All the favourites and addresses will be deleted by this action. Are you sure you want to continue?
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => handleDialogClose(false)} color="primary">
+                                No
+                            </Button>
+                            <Button onClick={() => handleDialogClose(true)} color="primary" autoFocus>
+                                Yes
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Paper>
             </Container>}
 
-            {error && <ErrorHandler error={error} onClose={() => setError(null)} />}
+            {error && <ErrorHandler error={error} onClose={() => { setError(null) }} />}
         </ThemeProvider>
     )
 }

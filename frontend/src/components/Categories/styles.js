@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
           background: '#555',
         },
       },
+      selectedItem: {
+        backgroundColor: `${theme.palette.primary.main} !important`,
+      },
       
 }))
 

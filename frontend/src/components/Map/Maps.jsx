@@ -1,13 +1,10 @@
 // import GoogleMapReact from 'google-map-react';
 // "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import useStyles from './styles';
-import { Box, Button, ButtonGroup, Card, CardContent, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, Rating, Tooltip, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
-import CloseIcon from '@mui/icons-material/Close';
 import { categories } from '../../constants';
-import api, { routes } from '../../api';
-import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
 import Categories from '../Categories/Categories';
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
 
@@ -27,11 +24,13 @@ const Maps = ({loading, error}) => {
   const [open, setOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   const [cardClose, setCardClose] = useState(false);
+  const [favChanged, setFavChanged] = useState(null);
 
-  
 
   const handleCategoryClick = (category) => {
-    setListOfPlaces(null);
+    if(selectedCategory != category){
+      setListOfPlaces(null);
+    }
     setSelectedPin(null); // Update selected pin's data
     setCardClose(false);
     setSelectedCategory(category);
@@ -44,7 +43,6 @@ const Maps = ({loading, error}) => {
 
   const handlePlaceSelect = (place) => {
     setPlaces([place]);
-    console.log(place);
     handlePinClick(place);
   };
 
@@ -77,51 +75,55 @@ const Maps = ({loading, error}) => {
     setCardClose(false);
   };
 
-  const renderPlaceDetails = () => {
-    return (
-      <>
-      {cardClose && <Box className={classes.placeDetailsCard}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              {selectedPin?.BEZEICHNUNG}
-              <IconButton onClick={handleCardClose} className={classes.closeButton}>
-          <CloseIcon />
-        </IconButton>
-
-            </Typography>
-            <Rating value={2} readOnly precision={0.5} />
-            <Typography variant="body2" color="text.secondary">
-              {selectedPin?.TELEFON}
-            </Typography>
-            {/* Add buttons or links for reviews, directions, etc. */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-              <IconButton aria-label="Reviews">
-                {/* Add icon component (e.g., <ReviewsIcon />) */}
-              </IconButton>
-              <IconButton aria-label="Directions">
-                <DirectionsRoundedIcon />
-              </IconButton>
-            </Box>
-            {/* Add buttons for Dine-in, Takeaway, Delivery */}
-            <Box sx={{ display: 'flex', mt: 1 }}>
-              <IconButton aria-label="Dine-in">
-                {/* Add icon component (e.g., <RestaurantIcon />) */}
-              </IconButton>
-              <IconButton aria-label="Takeaway">
-                {/* Add icon component */}
-              </IconButton>
-              <IconButton aria-label="Delivery">
-                {/* Add icon component */}
-              </IconButton>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>}
-      
-      </>
-    );
+  const handleFavourite = (value) => {
+    setFavChanged(value)
   }
+
+  // const renderPlaceDetails = () => {
+  //   return (
+  //     <>
+  //     {cardClose && <Box className={classes.placeDetailsCard}>
+  //       <Card>
+  //         <CardContent>
+  //           <Typography variant="h6" gutterBottom>
+  //             {selectedPin?.BEZEICHNUNG}
+  //             <IconButton onClick={handleCardClose} className={classes.closeButton}>
+  //         <CloseIcon />
+  //       </IconButton>
+
+  //           </Typography>
+  //           <Rating value={2} readOnly precision={0.5} />
+  //           <Typography variant="body2" color="text.secondary">
+  //             {selectedPin?.TELEFON}
+  //           </Typography>
+  //           {/* Add buttons or links for reviews, directions, etc. */}
+  //           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+  //             <IconButton aria-label="Reviews">
+  //               {/* Add icon component (e.g., <ReviewsIcon />) */}
+  //             </IconButton>
+  //             <IconButton aria-label="Directions">
+  //               <DirectionsRoundedIcon />
+  //             </IconButton>
+  //           </Box>
+  //           {/* Add buttons for Dine-in, Takeaway, Delivery */}
+  //           <Box sx={{ display: 'flex', mt: 1 }}>
+  //             <IconButton aria-label="Dine-in">
+  //               {/* Add icon component (e.g., <RestaurantIcon />) */}
+  //             </IconButton>
+  //             <IconButton aria-label="Takeaway">
+  //               {/* Add icon component */}
+  //             </IconButton>
+  //             <IconButton aria-label="Delivery">
+  //               {/* Add icon component */}
+  //             </IconButton>
+  //           </Box>
+  //         </CardContent>
+  //       </Card>
+  //     </Box>}
+      
+  //     </>
+  //   );
+  // }
 
   return (
     
@@ -135,6 +137,9 @@ const Maps = ({loading, error}) => {
             markPlaces = {showPlaces}
             loading={loading}
             error={error}
+            selectedPlace={selectedPin}
+            favChanged={favChanged}
+            handleFavChange={handleFavourite}
           />
         )}
         <Box className={classes.mapContainer}>
@@ -148,7 +153,8 @@ const Maps = ({loading, error}) => {
               const pinStyle = getPinStyle(selectedCategory.id);
               return (
                 <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={index} onClick={() => handlePinClick(place)}>
-                  <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />
+                  {selectedPin?.ID === place.ID && <Pin background='black' borderColor="black" glyphColor="white" />}
+                  {selectedPin?.ID != place.ID && <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />}
                 </AdvancedMarker>
               );
 
@@ -156,7 +162,7 @@ const Maps = ({loading, error}) => {
           </Map>
           {/* {selectedPin && cardClose && renderPlaceDetails()} */}
 
-          {selectedPin && cardClose && (<PlaceDetails onClose={handleCardClose} selectedPlace={selectedPin}/>)}
+          {selectedPin && cardClose && (<PlaceDetails onClose={handleCardClose} selectedPlace={selectedPin} favChanged={handleFavourite}/>)}
         </Box>
       </Box>
     </APIProvider>

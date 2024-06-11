@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-
 import Header from '../Header/Header';
-
 import { Avatar, Box, Button, CssBaseline, Grid, Paper, TextField, ThemeProvider, Typography } from '@mui/material';
-
-import useStyles from './styles';
-
 import api, { routes } from '../../api';
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_ID } from '../../constants';
 import { useNavigate } from 'react-router-dom';
-
-
 import { theme } from '../../utils/themeProvider';
-import { getResponseError } from '../../utils/errorUtils';
+import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
 import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import Loader from '../Loader/Loader';
 
+import useStyles from './styles';
 
 const Login = () => {
 
@@ -72,6 +66,8 @@ const Login = () => {
                 navigate('/')
             }
             else {
+                const errorData = getResponseInfo(error);
+                setError(errorData);
                 navigate('/login');
                 setIsSignup(false);
             }
@@ -87,6 +83,7 @@ const Login = () => {
     const resetState = () => {
         setIsSignup(!isSignup);
         setInputs({ firstname: '', lastname: '', username: '', email: '', password: '' });
+        setError(null);
     }
 
 
@@ -94,7 +91,7 @@ const Login = () => {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header />
+            <Header isLoginPage={true}/>
 
             <Box component="form" onSubmit={handleSubmit}>
                 <Grid container className={classes.background} sx={{ minHeight: '100vh' }}>

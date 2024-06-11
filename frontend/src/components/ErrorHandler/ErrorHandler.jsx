@@ -1,8 +1,7 @@
-import { Alert, AlertTitle, IconButton, Snackbar, Stack } from '@mui/material';
+import { Alert, AlertTitle, Snackbar } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import CloseIcon from '@mui/icons-material/Close';
 
-const ErrorHandler = ({ error }) => {
+const ErrorHandler = ({ error, onClose }) => {
 
     const [showAlert, setShowAlert] = useState(true);
     const [open, setOpen] = useState(true);
@@ -11,15 +10,11 @@ const ErrorHandler = ({ error }) => {
         setShowAlert(error !== null);
     }, [error]);
 
-    //   const handleClose = () => {
-    //     onClose(); // Call the parent's onClose function
-    //   };
-
     const handleClose = () => {
         setOpen(false);
         setShowAlert(null);
+        onClose();
     };
-
     return (
         <Snackbar
         open={open}
@@ -33,7 +28,7 @@ const ErrorHandler = ({ error }) => {
           {showAlert && (
             <Alert severity={error.statusType || 'error'} onClose={handleClose}>
               {error?.title && <AlertTitle>{error.title}</AlertTitle>}
-              {error.message.detail}
+              {error?.message?.detail} 
               {/* <IconButton onClick={handleClose}>
                 <CloseIcon />
               </IconButton> */}
