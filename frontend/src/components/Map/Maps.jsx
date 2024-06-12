@@ -1,18 +1,19 @@
 // import GoogleMapReact from 'google-map-react';
 // "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useStyles from './styles';
 import { Box, Button } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
 import { categories } from '../../constants';
 import Categories from '../Categories/Categories';
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
+import Directions from '../Directions/Directions';
 
-const Maps = ({loading, error}) => {
+
+const Maps = ({ loading, error }) => {
   const classes = useStyles();
   const coordinates = { lat: 50.827847, lng: 12.921370 };
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
   const mapId = import.meta.env.VITE_MAP_ID;
 
   const mapOptions = {
@@ -23,22 +24,29 @@ const Maps = ({loading, error}) => {
   const [listOfPlaces, setListOfPlaces] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
-  const [cardClose, setCardClose] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [showPlaceDetails, setPlaceDetails] = useState(false);
+  const [showDirections, setShowDirections] = useState(false);
+
   const [favChanged, setFavChanged] = useState(null);
 
+  const [origin, setOrigin] = useState(coordinates);
+  const [destination, setDestination] = useState(null);
+  const [showButton, setShowButtons] = useState(true);
 
   const handleCategoryClick = (category) => {
-    if(selectedCategory != category){
+    if (selectedCategory != category) {
       setListOfPlaces(null);
     }
     setSelectedPin(null); // Update selected pin's data
-    setCardClose(false);
+    setPlaceDetails(false);
     setSelectedCategory(category);
+    setShowDirections(false);
+    setShowCategories(true);
   };
 
-  const handleCloseSidebar = () => {
-    // setSelectedCategory('');
-    setOpen(false);
+  const handleCategoriesCloseSidebar = () => {
+    setShowCategories(false);
   };
 
   const handlePlaceSelect = (place) => {
@@ -67,87 +75,59 @@ const Maps = ({loading, error}) => {
 
   const handlePinClick = (place) => {
     setSelectedPin(place); // Update selected pin's data
-    setCardClose(true);
+    setPlaceDetails(true);
   };
 
-  const handleCardClose = () => {
-    // setSelectedCategory('');
-    setCardClose(false);
+  const handlePlaceCardClose = () => {
+    setSelectedPin(null);
+    setPlaceDetails(false);
   };
 
   const handleFavourite = (value) => {
     setFavChanged(value)
   }
 
-  // const renderPlaceDetails = () => {
-  //   return (
-  //     <>
-  //     {cardClose && <Box className={classes.placeDetailsCard}>
-  //       <Card>
-  //         <CardContent>
-  //           <Typography variant="h6" gutterBottom>
-  //             {selectedPin?.BEZEICHNUNG}
-  //             <IconButton onClick={handleCardClose} className={classes.closeButton}>
-  //         <CloseIcon />
-  //       </IconButton>
+  const handleDirectionsClick = (place) => {
+    setListOfPlaces([]);
+    setPlaceDetails(false)
+    setShowCategories(false);
+    setShowDirections(true);
+    setDestination({ lat: place.Y, lng: place.X });
+    // setSelectedPin(null); // Close PlaceDetails
+  };
 
-  //           </Typography>
-  //           <Rating value={2} readOnly precision={0.5} />
-  //           <Typography variant="body2" color="text.secondary">
-  //             {selectedPin?.TELEFON}
-  //           </Typography>
-  //           {/* Add buttons or links for reviews, directions, etc. */}
-  //           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-  //             <IconButton aria-label="Reviews">
-  //               {/* Add icon component (e.g., <ReviewsIcon />) */}
-  //             </IconButton>
-  //             <IconButton aria-label="Directions">
-  //               <DirectionsRoundedIcon />
-  //             </IconButton>
-  //           </Box>
-  //           {/* Add buttons for Dine-in, Takeaway, Delivery */}
-  //           <Box sx={{ display: 'flex', mt: 1 }}>
-  //             <IconButton aria-label="Dine-in">
-  //               {/* Add icon component (e.g., <RestaurantIcon />) */}
-  //             </IconButton>
-  //             <IconButton aria-label="Takeaway">
-  //               {/* Add icon component */}
-  //             </IconButton>
-  //             <IconButton aria-label="Delivery">
-  //               {/* Add icon component */}
-  //             </IconButton>
-  //           </Box>
-  //         </CardContent>
-  //       </Card>
-  //     </Box>}
-      
-  //     </>
-  //   );
-  // }
+  const handleCloseDirections = () => {
+    setShowDirections(false);
+    setDestination(null);
+    setShowCategories(true);
+    setPlaceDetails(true);
+    // setOpen(false);
+  };
 
   return (
-    
+
     <APIProvider apiKey={googleMapsApiKey}>
       <Box className={classes.map}>
-        {selectedCategory && (
+        {showDirections ? <Directions destination={destination} onClose={handleCloseDirections} loading={loading}
+            error={error}/> : selectedCategory ? (
           <Categories
             selectedCategory={selectedCategory}
-            onClose={handleCloseSidebar}
+            onClose={handleCategoriesCloseSidebar}
             onPlaceSelect={handlePinClick}
-            markPlaces = {showPlaces}
+            markPlaces={showPlaces}
             loading={loading}
             error={error}
             selectedPlace={selectedPin}
             favChanged={favChanged}
             handleFavChange={handleFavourite}
           />
-        )}
+        ): null}
         <Box className={classes.mapContainer}>
-          <Box className={classes.buttonContainer}>
-          {categories.map((category) => (
-              <Button variant="contained" onClick={() => handleCategoryClick(category)} key={category.id}>{category.displayname}</Button>
+          {!showDirections && (<Box className={classes.buttonContainer}>
+            {categories.map((category) => (
+              <Button variant="contained" onClick={() => handleCategoryClick(category)} key={category.id} className={selectedCategory === category ? classes.selectedButton : ''}>{category.displayname}</Button>
             ))}
-          </Box>
+          </Box>)}
           <Map defaultZoom={12} defaultCenter={coordinates} mapId={mapId} options={mapOptions}>
             {listOfPlaces && listOfPlaces.map((place, index) => {
               const pinStyle = getPinStyle(selectedCategory.id);
@@ -159,14 +139,91 @@ const Maps = ({loading, error}) => {
               );
 
             })}
+            {/* <GetDirections /> */}
           </Map>
           {/* {selectedPin && cardClose && renderPlaceDetails()} */}
 
-          {selectedPin && cardClose && (<PlaceDetails onClose={handleCardClose} selectedPlace={selectedPin} favChanged={handleFavourite}/>)}
+          {showPlaceDetails && (<PlaceDetails onClose={handlePlaceCardClose} selectedPlace={selectedPin} favChanged={handleFavourite} onDirectionsClick={handleDirectionsClick} />)}
+
+          {/* {showDirections && destination && (<GetDirections origin={origin} destination={destination} onClose={handleCloseDirections} />)} */}
+
         </Box>
       </Box>
     </APIProvider>
   )
 }
+
+// import {
+//   useMapsLibrary,
+//   useMap
+// } from '@vis.gl/react-google-maps';
+
+
+// function GetDirections({ origin, destination }) {
+//   const map = useMap();
+//   const routesLibrary = useMapsLibrary('routes');
+//   const [directionsService, setDirectionsService] = useState();
+//   const [directionsRenderer, setDirectionsRenderer] = useState();
+//   const [routes, setRoutes] = useState([]);
+//   const [routeIndex, setRouteIndex] = useState(0);
+//   const selected = routes[routeIndex];
+//   const leg = selected?.legs[0];
+
+//   // Initialize directions service and renderer
+//   useEffect(() => {
+//     if (!routesLibrary || !map) return;
+//     setDirectionsService(new routesLibrary.DirectionsService());
+//     setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
+//   }, [routesLibrary, map]);
+
+//   // Use directions service
+//   useEffect(() => {
+//     if (!directionsService || !directionsRenderer) return;
+
+//     directionsService
+//       .route({
+//         origin: origin,
+//         destination: destination,
+//         travelMode: google.maps.TravelMode.DRIVING,
+//         provideRouteAlternatives: true
+//       })
+//       .then(response => {
+//         directionsRenderer.setDirections(response);
+//         setRoutes(response.routes);
+//       });
+
+//     return () => directionsRenderer.setMap(null);
+//   }, [directionsService, directionsRenderer]);
+
+//   // Update direction route
+//   useEffect(() => {
+//     if (!directionsRenderer) return;
+//     directionsRenderer.setRouteIndex(routeIndex);
+//   }, [routeIndex, directionsRenderer]);
+
+//   if (!leg) return null;
+
+//   return (
+//     <div className="directions">
+//       <h2>{selected.summary}</h2>
+//       <p>
+//         {leg.start_address.split(',')[0]} to {leg.end_address.split(',')[0]}
+//       </p>
+//       <p>Distance: {leg.distance?.text}</p>
+//       <p>Duration: {leg.duration?.text}</p>
+
+//       <h2>Other Routes</h2>
+//       <ul>
+//         {routes.map((route, index) => (
+//           <li key={route.summary}>
+//             <button onClick={() => setRouteIndex(index)}>
+//               {route.summary}
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
 
 export default Maps

@@ -74,8 +74,6 @@ const UserAccount = () => {
             setAddress(addRes.data);
         } catch (error) {
             const errorData = getResponseError(error);
-            // console.log(`"${errorData?.message?.detail}"`);
-            // console.log(`"${'Please add atleast one address to calculate distances..'}"`);
 
             if (errorData?.message?.detail != 'Please add atleast one address to calculate distances..') {
                 setError(errorData);
