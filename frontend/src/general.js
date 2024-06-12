@@ -4,6 +4,10 @@ export const generateURL = (url, params) => {
     });
 }
 
+const parseLanguages = (ele) => {
+    return ele.SPRACHEN === 'nan' || ele.SPRACHEN === ' '
+}
+
 export const generalJson = (arr) => {
     let response = [];
     arr.map((ele) => {
@@ -25,7 +29,7 @@ export const generalJson = (arr) => {
             FAX: ele.FAX ? ele.FAX != 'nan' ? ele.FAX : null: null,
             EMAIL: ele.EMAIL ? ele.EMAIL != 'nan' ? ele.EMAIL : null: null,
             PROFILE: ele.PROFILE ? ele.PROFILE != 'nan' ? ele.PROFILE : null: null,
-            LANGUAGES: ele.SPRACHEN ? ele.SPRACHEN != 'nan' ? ele.SPRACHEN : null: null,
+            LANGUAGES: parseLanguages(ele) ? null : ele.SPRACHEN,
             WWW: ele.WWW ? ele.WWW != 'nan' ? ele.WWW : null: null,
             TRAEGER: ele.TRAEGER ? ele.TRAEGER != 'nan' ? ele.TRAEGER : null: null,
             TRAEGERTYP: ele.TRAEGERTYP ? ele.TRAEGERTYP != 'nan' ? ele.TRAEGERTYP : null: null,
@@ -43,6 +47,34 @@ export const generalJson = (arr) => {
         };
         response.push(element);
     })
+    return response;
+
+}
+
+
+export const parseFavouriteData = (arr) => {
+    let response = [];
+    if(!(arr instanceof Array)){
+        return null
+    }
+        arr.map((ele) => {
+            let element = {
+                id: ele.id,
+                DESCRIPTION: ele.BEZEICHNUNG ? ele.BEZEICHNUNG != 'nan' ? ele.BEZEICHNUNG : null: null,
+                SHORT_DESCRIPTION: ele.KURZBEZEICHNUNG ? ele.KURZBEZEICHNUNG != 'nan' ? ele.KURZBEZEICHNUNG : null: null,
+                STREET: ele.STRASSE ? ele.STRASSE != 'nan' ? ele.STRASSE : null: null,
+                POSTCODE: ele.PLZ ? ele.PLZ != 'nan' ? ele.PLZ : null: null,
+                LOCATION: ele.ORT ? ele.ORT != 'nan' ? ele.ORT : null: null,
+                PHONE: ele.TELEFON ? ele.TELEFON != 'nan' ? ele.TELEFON : null: null,
+                EMAIL: ele.EMAIL ? ele.EMAIL != 'nan' ? ele.EMAIL : null: null,
+                TRAEGER: ele.TRAEGER ? ele.TRAEGER != 'nan' ? ele.TRAEGER : null: null,
+                CreationDate: ele.CreationDate ? ele.CreationDate != 'nan' ? ele.CreationDate : null: null,
+                category: ele.category,
+                user: ele.user,
+                item: ele.item
+            };
+            response.push(element);
+        })
     return response;
 
 }

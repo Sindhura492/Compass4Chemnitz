@@ -24,7 +24,7 @@ const Home = () => {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
-            <Header />
+            <Header isLoginPage={false}/>
             <Maps loading={handleLoader}
             error={handleError}/>
 

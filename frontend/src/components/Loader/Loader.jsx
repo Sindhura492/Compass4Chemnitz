@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, LinearProgress } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import React from 'react'
 
 const Loader = () => {

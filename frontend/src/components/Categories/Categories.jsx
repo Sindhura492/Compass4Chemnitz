@@ -2,15 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { Box, IconButton, List, ListItem, ListItemButton, ListItemText, Typography, Divider, Tooltip, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
-import useStyles from './styles';
 import api, { routes } from '../../api';
-import Loader from '../Loader/Loader';
-import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import { getResponseError } from '../../utils/errorUtils';
 import { generalJson } from '../../general';
+import useStyles from './styles';
 
-const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, loading, error }) => {
+const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, loading, error, selectedPlace, favChanged, handleFavChange }) => {
   const classes = useStyles();
 
   const [places, setPlaces] = useState([]);
@@ -18,25 +15,38 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
 
 
   useEffect(() => {
-    const fetchPlaces = async () => {
-      loading(true)
-      try {
-        const res = await api.get(routes[selectedCategory.urlName]);
-        const updatedResponse = generalJson(res.data);
-        setPlaces(updatedResponse);
-        markPlaces(updatedResponse)
-        setOpen(true)
-      } catch(error) {
-        const errorData = getResponseError(error);
-        error(errorData);
-      } finally {
-        loading(false)
-      }
-    };
     if (selectedCategory) {
       fetchPlaces();
     }
   }, [selectedCategory]);
+
+  useEffect(() => {
+    if (favChanged) {
+      fetchPlaces();
+      
+    }
+  }, [favChanged]);
+
+  useEffect(() => {
+  }, [selectedPlace]);
+
+
+  const fetchPlaces = async () => {
+    loading(true)
+    try {
+      const res = await api.get(routes[selectedCategory.urlName]);
+      const updatedResponse = generalJson(res.data);
+      setPlaces(updatedResponse);
+      markPlaces(updatedResponse)
+      setOpen(true)
+      handleFavChange(null);
+    } catch(error) {
+      const errorData = getResponseError(error);
+      error(errorData);
+    } finally {
+      loading(false)
+    }
+  };
 
   const handleCloseSidebar = () => {
     // setSelectedCategory('');
@@ -58,7 +68,7 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
       <List className={classes.scrollbar}>
         {places.map((place, index) => (
           <React.Fragment key={index}>
-            <ListItem>
+            <ListItem className={selectedPlace?.ID === place.ID ? classes.selectedItem : ''}>
               <ListItemButton onClick={() => onPlaceSelect(place)}>
                 <ListItemText
                   primary={place?.DESCRIPTION}

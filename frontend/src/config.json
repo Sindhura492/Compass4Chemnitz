@@ -8,8 +8,13 @@
         "getSocialChildProjects": "/api/schulsozialarbeits/",
         "getSocialTeenagerProjects": "/api/jugendberufshilfens/",
         "getUserInfo": "/api/user-info/:id/",
-        "getAddress": "/api/user-addresses/:id/",
-        "saveAddress": "/api/add-address/"
+        "getAddress": "/api/user-address/:id/",
+        "saveAddress": "/api/add-address/",
+        "deactivateUser": "/api/soft-delete-user/:id/",
+        "addToFavourite": "/api/favorites/",
+        "deleteFavourite": "/api/favorites/delete/:id/",
+        "getFavourite": "/api/favorites/:id/",
+        "changeRole": "/api/change-role/:id/"
 
     }
 }

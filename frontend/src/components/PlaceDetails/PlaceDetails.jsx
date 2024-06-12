@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import useStyles from './styles';
 import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Collapse, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Box, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
-import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import PlaceIcon from '@mui/icons-material/Place';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-
+import api, { routes } from '../../api';
+import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
+import ErrorHandler from '../ErrorHandler/ErrorHandler';
+import { generateURL } from '../../general';
+import CallIcon from '@mui/icons-material/Call';
+import PublicIcon from '@mui/icons-material/Public';
+import FaxIcon from '@mui/icons-material/Fax';
+import EmailIcon from '@mui/icons-material/Email';
+import InfoIcon from '@mui/icons-material/Info';
+import LanguageIcon from '@mui/icons-material/Language';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import EditIcon from '@mui/icons-material/Edit';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 
 const ExpandMore = styled((props) => {
@@ -39,281 +36,331 @@ const ExpandMore = styled((props) => {
 }));
 
 
-const PlaceDetails = ({ selectedPlace, onClose }) => {
+const PlaceDetails = ({ selectedPlace, onClose, favChanged }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
-    const [isFavourite, setIsFavourite] = useState(selectedPlace.is_favourite);
+    const [isFavourite, setIsFavourite] = useState(false);
+    const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(false);
+
+
+    useEffect(() => {
+        setIsFavourite(selectedPlace.is_favourite)
+    }, [selectedPlace])
+
+    const userId = localStorage.getItem('user_id');
+
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
 
-    const addToFavourite = () => {
+    const addToFavourite = async () => {
+        try {
+            const body = {
+                user: Number(userId),
+                category: Number(selectedPlace.category),
+                item: Number(selectedPlace.ID)
+            }
+            const response = await api.post(routes.addToFavourite, body);
+            const responseInfo = getResponseInfo(response);
+            setError(responseInfo);
+            setIsFavourite(true);
+            favChanged(responseInfo);
+        } catch (errorResponse) {
+            const errorData = getResponseError(errorResponse);
+            setError(errorData);
+        } finally {
+            setLoading(false);
+        }
 
     }
 
-    const removeFromFavourite = () => {
-
+    const removeFromFavourite = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('category', Number(selectedPlace.category));
+            formData.append('item', Number(selectedPlace.ID));
+            const deleteFavouriteUrl = generateURL(routes.deleteFavourite, { id: userId });
+            const response = await api.delete(deleteFavouriteUrl, {
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+            const errorData = getResponseInfo(response);
+            setError(errorData);
+            setIsFavourite(false);
+            favChanged(errorData);
+        } catch (errorResponse) {
+            const errorData = getResponseError(errorResponse);
+            setError(errorData);
+        } finally {
+            setLoading(false);
+        }
     }
 
 
     return (
-        <Box className={classes.placeDetailsCard}>
-            <Card className={classes.card} sx={{ maxWidth: 360 }}>
-                <CardHeader
-                    action={
-                        <IconButton onClick={onClose} className={classes.closeButton}>
-                            <CloseIcon />
+        <>
+            <Box className={classes.placeDetailsCard}>
+                <Card className={classes.card} sx={{ maxWidth: 360 }}>
+                    <CardHeader
+                        action={
+                            <IconButton onClick={onClose} className={classes.closeButton}>
+                                <CloseIcon />
+                            </IconButton>
+                        }
+                        title={selectedPlace?.DESCRIPTION}
+                        titleTypographyProps={{ variant: 'h6', style: { fontSize: '20px' } }}
+                        subheader={selectedPlace?.ART}
+                    />
+                    <Divider />
+                    <CardActions disableSpacing>
+                        <IconButton aria-label="Directions">
+                            <Avatar className={classes.avatarStyle}>
+                                <DirectionsRoundedIcon />
+                            </Avatar>
                         </IconButton>
-                    }
-                    title={selectedPlace?.DESCRIPTION}
-                    titleTypographyProps={{ variant: 'h6', style: { fontSize: '20px' } }}
-                    subheader={selectedPlace?.ART}
-                />
-                <Divider />
-                <CardActions disableSpacing>
-                    <IconButton aria-label="Directions">
-                        <Avatar className={classes.avatarStyle}>
-                            <DirectionsRoundedIcon />
-                        </Avatar>
-                    </IconButton>
-                    {!isFavourite && <IconButton aria-label="Favourites" onClick={addToFavourite}>
-                        <FavoriteBorderIcon fontSize="large" style={{ color: 'red' }} />
-                    </IconButton>}
+                        {!isFavourite && <IconButton aria-label="Favourites" onClick={addToFavourite}>
+                            <FavoriteBorderIcon fontSize="large" style={{ color: 'red' }} />
+                        </IconButton>}
 
-                    {isFavourite && <IconButton aria-label="Favorites" onClick={removeFromFavourite}>
-                        <FavoriteIcon fontSize="large" style={{ color: 'red' }} />
-                    </IconButton>}
-                    <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
-                        <Avatar>
+                        {isFavourite && <IconButton aria-label="Favorites" onClick={removeFromFavourite}>
+                            <FavoriteIcon fontSize="large" style={{ color: 'red' }} />
+                        </IconButton>}
+                        <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
+                            <Avatar>
+                                <ExpandMoreIcon />
+                            </Avatar>
+                        </ExpandMore>
+                    </CardActions>
+                    <Divider />
+                    <CardContent sx={{ padding: 0 }}>
+                        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'primary', overflowX: 'hidden' }}>
+                            <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <LocationOnOutlinedIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={`${selectedPlace?.STREET} ${selectedPlace?.POSTCODE} ${selectedPlace?.LOCATION}`}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>
+                            {selectedPlace.PHONE && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <CallIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.PHONE}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
 
-                            <ExpandMoreIcon />
-                        </Avatar>
-                    </ExpandMore>
-                </CardActions>
-                <Divider />
-                <CardContent sx={{ padding: 0 }}>
-                    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'primary', overflowX: 'hidden' }}>
-                        <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={`${selectedPlace?.STREET} ${selectedPlace?.POSTCODE} ${selectedPlace?.LOCATION}`}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>
-                        {selectedPlace.PHONE && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.PHONE}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                    </List>
-                </CardContent>
-
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 77vh)', padding: 0 }}>
-
-                        {selectedPlace.WWW && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.WWW}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-
-                        {selectedPlace.FAX && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.FAX}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.EMAIL && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.EMAIL}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.PROFILE && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.PROFILE}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.LANGUAGES && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.LANGUAGES}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.TRAEGER && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.TRAEGER}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.BEZUGNR && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.BEZUGNR}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.Editor && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.Editor}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-                        {selectedPlace.EditDate && <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar className={classes.listAvatar}>
-                                    <LocationOnOutlinedIcon fontSize='large' />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={selectedPlace?.EditDate}
-                                primaryTypographyProps={{
-                                    variant: 'body1',
-                                    style: {
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                        wordBreak: 'break-word'
-                                    }
-                                }} />
-                        </ListItem>}
-
-
+                        </List>
                     </CardContent>
-                </Collapse>
-            </Card>
-        </Box>
+
+                    <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <CardContent sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 77vh)', padding: 0 }}>
+
+                            {selectedPlace.WWW && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <PublicIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.WWW}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+
+                            {selectedPlace.FAX && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <FaxIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.FAX}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.EMAIL && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <EmailIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.EMAIL}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.PROFILE && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <InfoIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.PROFILE}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.LANGUAGES && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <LanguageIcon fontSize='large' title="Languages" />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.LANGUAGES}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.TRAEGER && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <VolunteerActivismIcon fontSize='large' title="Traeger" />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.TRAEGER}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.DESCRIPTION_ADDITION && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <DescriptionIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.DESCRIPTION_ADDITION}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.Editor && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <EditIcon fontSize='large' title="Editor" />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.Editor}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+                            {selectedPlace.EditDate && <ListItem className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar className={classes.listAvatar}>
+                                        <EditCalendarIcon fontSize='large' />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={selectedPlace?.EditDate}
+                                    primaryTypographyProps={{
+                                        variant: 'body1',
+                                        style: {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word'
+                                        }
+                                    }} />
+                            </ListItem>}
+
+
+                        </CardContent>
+                    </Collapse>
+                </Card>
+            </Box>
+            {error && <ErrorHandler error={error} onClose={() => { setError(null) }} />}
+
+        </>
     );
 }
 
