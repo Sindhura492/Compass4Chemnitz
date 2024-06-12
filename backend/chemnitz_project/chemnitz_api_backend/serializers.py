@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -13,7 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self,validated_data):
         password = validated_data.pop('password')
+        email = validated_data.get('email')
+        
+
         try:
+            error_message = "A user with this email already exists."
+            if User.objects.filter(email=email).exists():
+                raise serializers.ValidationError({"detail": [error_message]})
             user=User.objects.create_user(password=password,**validated_data)
         except IntegrityError as e:
             if 'UNIQUE constraint failed' in str(e):

@@ -11,12 +11,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print("Scheduling Schulen update task...")
-        schedule.every(60).seconds.do(self.update_model)
+        schedule.every(30).minutes.do(self.update_model)
 
         print("Starting scheduled tasks...")
         while True:
             schedule.run_pending()
-            time.sleep(1)
+            time.sleep(3)
 
     def update_model(self):
         print("Running Schulen update task...")
