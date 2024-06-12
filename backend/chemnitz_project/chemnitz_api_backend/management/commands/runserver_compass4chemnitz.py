@@ -12,7 +12,7 @@ class Command(RunServerCommand):
                 while True:
                     print(f"Running {command_name} update task")
                     call_command(command_name)
-                    time.sleep(60)  # Run every 60 seconds
+                    time.sleep(1800)
 
             thread = threading.Thread(target=update_task)
             thread.daemon = True
