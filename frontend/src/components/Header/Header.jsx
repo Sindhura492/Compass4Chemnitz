@@ -46,6 +46,12 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
         navigate('/');
     }
 
+    const naviagteToFavourites = () => {
+        setAnchorEl(null);
+        handleMobileMenuClose();
+        navigate('/favourite');
+    }
+
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu anchorEl={anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right', }} id={menuId} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={isMenuOpen} onClose={handleMenuClose} >
@@ -59,7 +65,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
     const renderMobileMenu = (
         <Menu anchorEl={mobileMoreAnchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right', }} id={mobileMenuId} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={isMobileMenuOpen} onClose={handleMobileMenuClose} >
             <MenuItem>
-                <IconButton size="large" color="inherit" >
+                <IconButton size="large" color="inherit" onClick={naviagteToFavourites}>
                     <FavoriteIcon />
                 </IconButton>
                 <p>Favorites</p>
@@ -77,11 +83,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
         </Menu>
     );
 
-    const naviagteToFavourites = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-        navigate('/favourite');
-    }
+
 
 
     // function stringToColor(string) {
@@ -127,7 +129,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
                     {!isLoginPage && (
                         <>
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                                <IconButton size="large" aria-label="show 17 new notifications" color="inherit" onClick={naviagteToFavourites}>
+                                <IconButton size="large" aria-label="favourites" color="inherit" onClick={naviagteToFavourites}>
                                     {/* <Badge badgeContent={17} color="error"> */}
                                     <FavoriteIcon />
                                     {/* </Badge> */}

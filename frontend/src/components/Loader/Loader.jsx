@@ -3,9 +3,6 @@ import React from 'react'
 
 const Loader = () => {
   return (
-    // <Backdrop sx={{ color: 'black', opacity: 0.75 }} open>
-    //       <CircularProgress color="secondary" />
-    //     </Backdrop>
     <Box
     sx={{
       display: 'flex',

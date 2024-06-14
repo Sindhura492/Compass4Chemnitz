@@ -31,6 +31,7 @@ const Login = () => {
 
     const [error, setError] = useState(null);
     const [passwordError, setPasswordError] = useState(null);
+    const [passwordCriteria, setPasswordCriteria] = useState(null);
 
     useEffect(() => {
         localStorage.clear()
@@ -46,15 +47,29 @@ const Login = () => {
         if(e.target.name === 'confirmPassword'){
             setPasswordError(null);
         }
+        if(e.target.name === 'password' && validatePassword(e.target.value)){
+            setPasswordCriteria(null);
+        }
     }
+
+    const validatePassword = (password) => {
+        const passwordValid = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).{7,}$/;
+        return passwordValid.test(password);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         // Password validation for signup
-        if (isSignup && inputs.password !== inputs.confirmPassword) {
-            setPasswordError("Passwords do not match");
-            return;
+        if (isSignup){
+            if (inputs.password !== inputs.confirmPassword) {
+                setPasswordError("Passwords do not match");
+                return;
+            }
+            if (!validatePassword(inputs.password)) {
+                setPasswordCriteria("Password must be at least 7 characters long, contain a number, an uppercase letter, a lowercase letter, and a special character.");
+                return;
+            }
         }
 
         setLoading(true)
@@ -128,7 +143,9 @@ const Login = () => {
 
                                 {isSignup && (<TextField margin="dense" label='Email' placeholder='Enter Email' type='email' name='email' value={inputs.email} onChange={handleChange} fullWidth required />)}
 
-                                <TextField margin="dense" label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required />
+                                {/* <TextField margin="dense" label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required /> */}
+
+                                <TextField margin="dense" label='Password' placeholder='Enter password' name='password' value={inputs.password} onChange={handleChange} type='password' fullWidth required error={!!passwordCriteria} helperText={passwordCriteria && passwordCriteria !== "Passwords do not match" ? passwordCriteria : null} />
 
                                 {isSignup && (<TextField margin="dense" label='Confirm Password' placeholder='Confirm Passworrd' type='password' name='confirmPassword' value={inputs.confirmPassword} onChange={handleChange} fullWidth required error={!!passwordError} helperText={passwordError}/>)}
 
