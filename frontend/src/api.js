@@ -19,6 +19,25 @@ api.interceptors.request.use(
     }
 )
 
+// Response interceptor
+api.interceptors.response.use(
+    (response) => {
+      // Any status code that lies within the range of 2xx causes this function to trigger
+      return response;
+    },
+    (error) => {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      if (error.response.status === 401) {
+        // Handle token expiration or unauthorized access
+        if(error.response.data.code === "token_not_valid"){
+            localStorage.clear(); // Remove the token if it's expired or invalid
+            window.location.href = '/login'; // Redirect to login page
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
 export const routes = config.routes;
 
 export default api;

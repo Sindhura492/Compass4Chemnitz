@@ -1,4 +1,3 @@
-// src/components/Categories.js
 import React, { useEffect, useState } from 'react';
 import { Box, IconButton, List, ListItem, ListItemButton, ListItemText, Typography, Divider, Tooltip, Avatar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -52,9 +51,6 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
     // setSelectedCategory('');
     setOpen(false);
   };
-
-  
-
 
   return (
 

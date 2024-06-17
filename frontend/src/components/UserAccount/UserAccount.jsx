@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Header/Header'
-import { Box, Button, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormHelperText, IconButton, Paper, Switch, TextField, ThemeProvider, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormControlLabel, FormHelperText, IconButton, Paper, Switch, TextField, ThemeProvider, Tooltip, Typography } from '@mui/material'
 import api, { routes } from '../../api';
 import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
 import Loader from '../Loader/Loader';
@@ -74,8 +74,6 @@ const UserAccount = () => {
             setAddress(addRes.data);
         } catch (error) {
             const errorData = getResponseError(error);
-            // console.log(`"${errorData?.message?.detail}"`);
-            // console.log(`"${'Please add atleast one address to calculate distances..'}"`);
 
             if (errorData?.message?.detail != 'Please add atleast one address to calculate distances..') {
                 setError(errorData);
@@ -86,7 +84,7 @@ const UserAccount = () => {
     };
 
     const setDefaultSwitchValue = (data) => {
-        if (data.role === '1') {
+        if (data.role === 1) {
             setIsSuperUser(true);
         } else {
             setIsSuperUser(false);
@@ -122,6 +120,8 @@ const UserAccount = () => {
             }
             const saveAddress = generateURL(routes.saveAddress);
             const saveRes = await api.post(saveAddress, data);
+            const responseData = getResponseInfo(saveRes);
+            setError(responseData);
             await getAddressDetails();
         } catch (error) {
             const errorData = getResponseError(error);
@@ -231,8 +231,8 @@ const UserAccount = () => {
 
             {!isLoading && <Container maxWidth="md" sx={{ p: 3 }}>
                 <Box display="flex" alignItems="center" sx={{mb: 1}}>
-                    <IconButton size="small">
-                        <ArrowBackIosNewIcon onClick={naviagteToHome}/>
+                    <IconButton size="small" onClick={naviagteToHome}>
+                        <ArrowBackIosNewIcon />
                     </IconButton>
                     <Typography variant="h5">
                         Account Settings
@@ -294,18 +294,20 @@ const UserAccount = () => {
 
                         {address && address?.map((add, index) => (
                             <Box key={index}>
+                                {index > 0 ? <Divider sx={{m: 1, opacity: 0.9 }} /> : null}
+
                                 <Box display="flex" justifyContent="space-between" alignItems="center">
                                     <Typography variant="body1" gutterBottom>
                                         {`Address ${index + 1}`}
                                     </Typography>
                                     {/* <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={deleteAddress(add, index)}>Delete</Button> */}
                                 </Box>
+                                
                                 <TextField margin="dense" label='House No' defaultValue={add.house_no} fullWidth disabled />
                                 <TextField margin="dense" label='Street Name' defaultValue={add.street_name} fullWidth disabled />
                                 <TextField margin="dense" label='City' defaultValue={add.city} fullWidth disabled />
                                 <TextField margin="dense" label='State' defaultValue={add.state} fullWidth disabled />
                                 <TextField margin="dense" label='Country' defaultValue={add.country} fullWidth disabled />
-
                             </Box>
                         ))}
                     </Box>

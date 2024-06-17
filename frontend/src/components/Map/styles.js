@@ -77,6 +77,9 @@ const useStyles = makeStyles((theme) => ({
     },
     zIndex: 1000,
   },
+  selectedButton: {
+    backgroundColor: `${theme.palette.secondary.light} !important`,
+  },
 
 }));
 

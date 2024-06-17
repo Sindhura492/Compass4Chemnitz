@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import useStyles from './styles';
 import { styled } from '@mui/material/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Collapse, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
@@ -22,6 +21,8 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import EditIcon from '@mui/icons-material/Edit';
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import DescriptionIcon from '@mui/icons-material/Description';
+import useStyles from './styles';
+
 
 
 const ExpandMore = styled((props) => {
@@ -36,7 +37,7 @@ const ExpandMore = styled((props) => {
 }));
 
 
-const PlaceDetails = ({ selectedPlace, onClose, favChanged }) => {
+const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
@@ -100,6 +101,14 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged }) => {
         }
     }
 
+    const handleFavouriteClick = () => {
+        if (isFavourite) {
+          removeFromFavourite();
+        } else {
+          addToFavourite();
+        }
+      };
+
 
     return (
         <>
@@ -119,16 +128,12 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged }) => {
                     <CardActions disableSpacing>
                         <IconButton aria-label="Directions">
                             <Avatar className={classes.avatarStyle}>
-                                <DirectionsRoundedIcon />
+                                <DirectionsRoundedIcon onClick={() => onDirectionsClick(selectedPlace)} />
                             </Avatar>
                         </IconButton>
-                        {!isFavourite && <IconButton aria-label="Favourites" onClick={addToFavourite}>
-                            <FavoriteBorderIcon fontSize="large" style={{ color: 'red' }} />
-                        </IconButton>}
-
-                        {isFavourite && <IconButton aria-label="Favorites" onClick={removeFromFavourite}>
-                            <FavoriteIcon fontSize="large" style={{ color: 'red' }} />
-                        </IconButton>}
+                        <IconButton onClick={handleFavouriteClick}>
+                            {isFavourite ? <FavoriteIcon fontSize='large' style={{color: 'red'}}/> : <FavoriteBorderIcon fontSize='large' style={{color: 'red'}}/>}
+                        </IconButton>
                         <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
                             <Avatar>
                                 <ExpandMoreIcon />
