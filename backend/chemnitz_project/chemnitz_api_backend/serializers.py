@@ -4,19 +4,30 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-
+from chemnitz_api_backend.validators import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','username','password','first_name','last_name','email']
-        extra_kwargs= {"password":{"write_only":True}}
+        extra_kwargs= {"password":{"write_only":True}}   
+
+    def validate_email(self, value):
+        try:
+            validate_email(value)
+        except ValueError as e:
+            raise serializers.ValidationError(str(e))
+        return value
 
     def create(self,validated_data):
         password = validated_data.pop('password')
         email = validated_data.get('email')
         
-
+        try:
+            validate_password(password)
+        except ValueError as e:
+            raise serializers.ValidationError({"password": e.args[0]})
+        
         try:
             error_message = "A user with this email already exists."
             if User.objects.filter(email=email).exists():

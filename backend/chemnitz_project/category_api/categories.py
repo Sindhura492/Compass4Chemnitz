@@ -10,10 +10,10 @@ from rest_framework.views import APIView
 class KindergartenView(APIView):
  def get(self, request, *args, **kwargs):
         user_id = request.user.id
-        kindergartens = Schulsozialarbeit.objects.all()
+        kindergartens = Kindergarten.objects.all()
         favorite_items = Favorite.objects.filter(user=user_id, category=1, item__in=kindergartens.values_list('ID', flat=True)).values_list('item', flat=True)
         
-        serializer = SchulenSerializer(kindergartens, many=True)
+        serializer = KindergartenSerializer(kindergartens, many=True)
         data = serializer.data
 
         for item in data:
@@ -25,10 +25,10 @@ class KindergartenView(APIView):
 class JugendberufshilfenView(APIView):
  def get(self, request, *args, **kwargs):
         user_id = request.user.id
-        jugendberufshilfens = Schulsozialarbeit.objects.all()
+        jugendberufshilfens = Jugendberufshilfen.objects.all()
         favorite_items = Favorite.objects.filter(user=user_id, category=2, item__in=jugendberufshilfens.values_list('ID', flat=True)).values_list('item', flat=True)
         
-        serializer = SchulenSerializer(jugendberufshilfens, many=True)
+        serializer = JugendberufshilfenSerializer(jugendberufshilfens, many=True)
         data = serializer.data
 
         for item in data:
@@ -44,7 +44,7 @@ class SchulsozialarbeitView(APIView):
         schulsozialarbeits = Schulsozialarbeit.objects.all()
         favorite_items = Favorite.objects.filter(user=user_id, category=4, item__in=schulsozialarbeits.values_list('ID', flat=True)).values_list('item', flat=True)
         
-        serializer = SchulenSerializer(schulsozialarbeits, many=True)
+        serializer = SchulsozialarbeitSerializer(schulsozialarbeits, many=True)
         data = serializer.data
 
         for item in data:
