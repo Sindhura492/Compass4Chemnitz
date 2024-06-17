@@ -6,6 +6,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import GradeIcon from '@mui/icons-material/Grade';
+import logo from '../../assets/destination.png';
 
 export default function Header({ isSuperUser = false, isLoginPage = true }) {
 
@@ -18,7 +19,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
     useEffect(() => {
     }, [isLoginPage, isSuperUser])
 
-    
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -121,6 +122,8 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
                     {/* <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }} >
                         <MenuIcon />
                     </IconButton> */}
+                    {/* Logo */}
+                    <Box component="img" src={logo} alt="Compass4Chemnitz Logo" sx={{ height: 25, mr: 1, cursor: 'pointer' }} onClick={navigateToHome} />
                     <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'block', cursor: 'pointer' } }} onClick={navigateToHome} >
                         Compass4Chemnitz
                     </Typography>

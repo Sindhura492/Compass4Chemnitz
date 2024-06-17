@@ -119,7 +119,7 @@ const Login = () => {
             <Header isLoginPage={true} />
 
             <Box component="form" onSubmit={handleSubmit}>
-                <Grid container className={classes.background} sx={{ minHeight: '100vh' }}>
+                <Box className={classes.background}>
                     <Grid container sx={{ maxWidth: '40vw' }}>
                         <Paper className={classes.paperStyle} elevation={10} sx={{ width: '100%' }}>
                             <Box className={classes.scrollbar} sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 160px)' }}>
@@ -163,7 +163,7 @@ const Login = () => {
                             </Box>
                         </Paper >
                     </Grid>
-                </Grid>
+                </Box>
             </Box>
             {error && <ErrorHandler error={error} onClose={() => setError(null)} />}
         </ThemeProvider>
