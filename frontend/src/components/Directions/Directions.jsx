@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, Divider, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Tab, Tabs, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemSecondaryAction, ListItemText, Tab, Tabs, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useMapsLibrary, useMap } from '@vis.gl/react-google-maps';
 import { generateURL } from '../../general';
 import api, { routes } from '../../api';
 import { getResponseError } from '../../utils/errorUtils';
-import useStyles from './styles';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import DirectionsTransitIcon from '@mui/icons-material/DirectionsTransit';
 import { useNavigate } from 'react-router-dom';
+
+import useStyles from './styles';
+
 
 const Directions = ({ destination, onClose, loading, error }) => {
     const classes = useStyles();
@@ -21,8 +22,6 @@ const Directions = ({ destination, onClose, loading, error }) => {
     const [listOfRoutes, setListOfRoutes] = useState([]);
     const [routeIndex, setRouteIndex] = useState(0);
     const selected = listOfRoutes[routeIndex];
-    const leg = selected?.legs[0];
-    const [tabsTime, setTabTime] = useState('-');
 
     const [open, setOpen] = useState(false);
     const [listOfAddress, setListOfAddress] = useState([]);
@@ -74,7 +73,7 @@ const Directions = ({ destination, onClose, loading, error }) => {
 
             })
 
-            directionsService
+        directionsService
             .route({
                 origin: coordinates,
                 destination: destination,
@@ -90,7 +89,7 @@ const Directions = ({ destination, onClose, loading, error }) => {
 
             })
 
-            directionsService
+        directionsService
             .route({
                 origin: coordinates,
                 destination: destination,
@@ -157,7 +156,6 @@ const Directions = ({ destination, onClose, loading, error }) => {
     }, []);
 
     const handleCloseSidebar = () => {
-        setOpen(false);
         onClose();
     };
 
@@ -208,57 +206,66 @@ const Directions = ({ destination, onClose, loading, error }) => {
 
     return (
         <Box className={`${classes.sidebar} ${open ? classes.sidebarOpen : ''}`}>
-            <Box className={classes.drawerHeader}>
-                <Typography variant="h6">{selectedAddress ? 'Directions' : 'Select Address'}</Typography>
-                <IconButton onClick={handleCloseSidebar} className={classes.closeButton}>
-                    <CloseIcon />
-                </IconButton>
-            </Box>
             {!selectedAddress && (
-                <List className={classes.scrollbar}>
-                    {listOfAddress.length > 0 ? (listOfAddress.map((address, index) => (
-                        <React.Fragment key={index}>
-                            <ListItem>
-                                <ListItemButton onClick={() => handleSelectedAddress(address)}>
+                <>
+                    <Box className={classes.drawerHeader}>
+                        <Typography variant="h6">Select Address</Typography>
+                        <IconButton onClick={handleCloseSidebar} className={classes.closeButton}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                    <List className={classes.scrollbar}>
+                        {listOfAddress.length > 0 ? (listOfAddress.map((address, index) => (
+                            <React.Fragment key={index}>
+                                <ListItem>
+                                    <ListItemButton onClick={() => handleSelectedAddress(address)}>
+                                        <ListItemText
+                                            primary={`${address?.house_no}, ${address?.street_name}`}
+                                            secondary={
+                                                <>
+                                                    {address.postalcode && (<>
+                                                        <Typography component={'span'} variant="body2" color="text.primary">{address?.postalcode}</Typography><br /></>)}
+                                                    <Typography component={'span'} variant="body2" color="text.secondary">{address?.city}</Typography><br />
+                                                    <Typography component={'span'} variant="body2" color="text.secondary">{address?.state}</Typography><br />
+                                                </>
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                                <Divider />
+                            </React.Fragment>
+                        ))) : (
+                            <React.Fragment>
+                                <ListItem>
                                     <ListItemText
-                                        primary={`${address?.house_no}, ${address?.street_name}`}
-                                        secondary={
-                                            <>
-                                                {address.postalcode && (<>
-                                                    <Typography component={'span'} variant="body2" color="text.primary">{address?.postalcode}</Typography><br /></>)}
-                                                <Typography component={'span'} variant="body2" color="text.secondary">{address?.city}</Typography><br />
-                                                <Typography component={'span'} variant="body2" color="text.secondary">{address?.state}</Typography><br />
-                                            </>
-                                        }
+                                        primary='Please add atleast one address to calculate distances.'
+                                        secondary={<Button variant="contained" onClick={navigateToUser}> Add Address </Button>}
                                     />
-                                </ListItemButton>
-                            </ListItem>
-                            <Divider />
-                        </React.Fragment>
-                    ))) : (
-                        <React.Fragment>
-                            <ListItem>
-                                <ListItemText
-                                    primary='Please add atleast one address to calculate distances.'
-                                    secondary={<Button variant="contained" onClick={navigateToUser}> Add Address </Button>}
-                                />
-                            </ListItem>
-                        </React.Fragment>
-                    )}
-                </List>)}
+                                </ListItem>
+                            </React.Fragment>
+                        )}
+                    </List>
+                </>
+            )}
 
             {selectedAddress && (
                 <>
+                    <Box className={classes.drawerHeader}>
+                        <Typography variant="h6">Directions</Typography>
+                        <IconButton onClick={handleCloseSidebar} className={classes.closeButton}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
                     <>
                         <Tabs
                             value={travelMode}
                             onChange={handleTravelModeChange}
                             className={classes.tabs}
                         >
-                            <Tab icon={<DirectionsCarIcon />} label={<Typography sx={{ fontSize: '12px' }}>{duration.driving}</Typography> } value="DRIVING" />
+                            <Tab icon={<DirectionsCarIcon />} label={<Typography sx={{ fontSize: '12px' }}>{duration.driving}</Typography>} value="DRIVING" />
                             {/* <Tab icon={<DirectionsTransitIcon />} label="11min" value="TRANSIT" /> */}
-                            <Tab icon={<DirectionsWalkIcon />} label={<Typography sx={{ fontSize: '12px' }}>{duration.walking}</Typography> } value="WALKING" />
-                            <Tab icon={<DirectionsBikeIcon />} label={ <Typography sx={{ fontSize: '12px' }}>{duration.bicycling}</Typography> } value="BICYCLING" />
+                            <Tab icon={<DirectionsWalkIcon />} label={<Typography sx={{ fontSize: '12px' }}>{duration.walking}</Typography>} value="WALKING" />
+                            <Tab icon={<DirectionsBikeIcon />} label={<Typography sx={{ fontSize: '12px' }}>{duration.bicycling}</Typography>} value="BICYCLING" />
                         </Tabs>
                     </>
 

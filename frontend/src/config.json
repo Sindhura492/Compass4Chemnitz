@@ -14,7 +14,8 @@
         "addToFavourite": "/api/favorites/",
         "deleteFavourite": "/api/favorites/delete/:id/",
         "getFavourite": "/api/favorites/:id/",
-        "changeRole": "/api/change-role/:id/"
-
+        "changeRole": "/api/change-role/:id/",
+        "editAddress": "/api/address/update/:id/",
+        "deleteAddress": "/api/user-address/delete/:id/"
     }
 }

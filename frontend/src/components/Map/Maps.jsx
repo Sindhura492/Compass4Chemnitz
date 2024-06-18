@@ -1,14 +1,18 @@
 // import GoogleMapReact from 'google-map-react';
 // "use client";
-import React, { useEffect, useState } from 'react';
-import useStyles from './styles';
-import { Box, Button, Icon } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button } from '@mui/material';
 import { APIProvider, AdvancedMarker, Map, Pin } from '@vis.gl/react-google-maps';
 import { categories } from '../../constants';
 import Categories from '../Categories/Categories';
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
 import Directions from '../Directions/Directions';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import book from '../../assets/open-book.png';
+import littleKid from '../../assets/little-kid.png';
+import playtime from '../../assets/playtime.png';
+import learning from '../../assets/learning.png';
+
+import useStyles from './styles';
 
 
 const Maps = ({ loading, error }) => {
@@ -23,7 +27,6 @@ const Maps = ({ loading, error }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [places, setPlaces] = useState(null);
   const [listOfPlaces, setListOfPlaces] = useState(null);
-  const [open, setOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
   const [showCategories, setShowCategories] = useState(false);
   const [showPlaceDetails, setPlaceDetails] = useState(false);
@@ -31,9 +34,7 @@ const Maps = ({ loading, error }) => {
 
   const [favChanged, setFavChanged] = useState(null);
 
-  const [origin, setOrigin] = useState(coordinates);
   const [destination, setDestination] = useState(null);
-  const [showButton, setShowButtons] = useState(true);
 
   const handleCategoryClick = (category) => {
     if (selectedCategory != category) {
@@ -62,15 +63,17 @@ const Maps = ({ loading, error }) => {
   const getPinStyle = (category) => {
     switch (category) {
       case 'schools':
-        return { background: "#704264", borderColor: "#BB8493", glyphColor: "#DBAFA0" };
+        return { background: "#cad74d", borderColor: "#98a51b", icon: book };
+      // return { background: "#FFA62F", borderColor: "#D77E07", icon: book };
       case 'kindergarden':
-        return { background: "blue", borderColor: "black", glyphColor: "white" };
+        return { background: "#50C2FF", borderColor: "#0054C3", icon: littleKid };
+      // return { background: "#FFA456", borderColor: "#F55E10", icon: book };
       case 'socialChildProjects':
-        return { background: "green", borderColor: "black", glyphColor: "white" };
+        return { background: "#13dfac", borderColor: "#00ad7a", icon: playtime };
       case 'socialTeenagerProjects':
-        return { background: "purple", borderColor: "black", glyphColor: "white" };
+        return { background: "#f44a8d", borderColor: "#c2185b", icon: learning };
       default:
-        return { background: "grey", borderColor: "green", glyphColor: "purple" };
+        return { background: "grey", borderColor: "green", icon: book };
     }
   };
 
@@ -89,6 +92,7 @@ const Maps = ({ loading, error }) => {
   }
 
   const handleDirectionsClick = (place) => {
+    loading(true)
     setListOfPlaces([]);
     setPlaceDetails(false)
     setShowCategories(false);
@@ -109,19 +113,19 @@ const Maps = ({ loading, error }) => {
     <APIProvider apiKey={googleMapsApiKey}>
       <Box className={classes.map}>
         {showDirections ? <Directions destination={destination} onClose={handleCloseDirections} loading={loading}
-            error={error}/> : selectedCategory ? (
-          <Categories
-            selectedCategory={selectedCategory}
-            onClose={handleCategoriesCloseSidebar}
-            onPlaceSelect={handlePinClick}
-            markPlaces={showPlaces}
-            loading={loading}
-            error={error}
-            selectedPlace={selectedPin}
-            favChanged={favChanged}
-            handleFavChange={handleFavourite}
-          />
-        ): null}
+          error={error} /> : selectedCategory ? (
+            <Categories
+              selectedCategory={selectedCategory}
+              onClose={handleCategoriesCloseSidebar}
+              onPlaceSelect={handlePinClick}
+              markPlaces={showPlaces}
+              loading={loading}
+              error={error}
+              selectedPlace={selectedPin}
+              favChanged={favChanged}
+              handleFavChange={handleFavourite}
+            />
+          ) : null}
         <Box className={classes.mapContainer}>
           {!showDirections && (<Box className={classes.buttonContainer}>
             {categories.map((category) => (
@@ -133,15 +137,42 @@ const Maps = ({ loading, error }) => {
               const pinStyle = getPinStyle(selectedCategory.id);
               return (
                 <AdvancedMarker position={{ lat: place.Y, lng: place.X }} key={index} onClick={() => handlePinClick(place)}>
-                  {selectedPin?.ID === place.ID && <Pin background="transparent"borderColor="transparent"><AccountBalanceIcon/></Pin>}
-                  {selectedPin?.ID != place.ID && <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />}
+
+                  {/* <Pin>
+                    {selectedPin?.ID === place.ID && (
+                      <div style={{ backgroundColor: 'transparent', borderRadius: '90%' }}>
+                        <img
+                          src={pinStyle.icon}
+                          alt="Marker Image"
+                          height="15px"
+                          width="15px"
+                        />
+                      </div>
+                    )}
+                  </Pin> */}
+
+                  {selectedPin?.ID === place.ID && <Pin><img
+                    src={pinStyle.icon}
+                    alt="Marker Image"
+                    height="15px"
+                    width="15px"
+                  /></Pin>}
+
+                  {selectedPin?.ID != place.ID && <Pin background={pinStyle.background} borderColor={pinStyle.borderColor}><img
+                    src={pinStyle.icon}
+                    alt="Marker Image"
+                    height="18px"
+                    width="18px"
+                  /></Pin>}
+
+                  {/* {selectedPin?.ID != place.ID && <Pin background={pinStyle.background} borderColor={pinStyle.borderColor} glyphColor={pinStyle.glyphColor} />} */}
                 </AdvancedMarker>
               );
 
             })}
           </Map>
 
-          {showPlaceDetails && (<PlaceDetails onClose={handlePlaceCardClose} selectedPlace={selectedPin} favChanged={handleFavourite} onDirectionsClick={handleDirectionsClick} />)}
+          {showPlaceDetails && (<PlaceDetails onClose={handlePlaceCardClose} selectedPlace={selectedPin} favChanged={handleFavourite} onDirectionsClick={handleDirectionsClick} loading={loading} />)}
 
         </Box>
       </Box>

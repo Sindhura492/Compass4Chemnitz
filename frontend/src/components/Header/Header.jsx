@@ -69,7 +69,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
                 <IconButton size="large" color="inherit" onClick={naviagteToFavourites}>
                     <FavoriteIcon />
                 </IconButton>
-                <p>Favorites</p>
+                <p onClick={naviagteToFavourites}>Favorites</p>
             </MenuItem>
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton size="large" aria-controls="primary-search-account-menu" aria-haspopup="true" color="inherit" >

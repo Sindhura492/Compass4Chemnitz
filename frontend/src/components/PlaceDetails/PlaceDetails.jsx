@@ -37,12 +37,11 @@ const ExpandMore = styled((props) => {
 }));
 
 
-const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }) => {
+const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, loading  }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
     const [error, setError] = useState(null);
-    const [isLoading, setLoading] = useState(false);
 
 
     useEffect(() => {
@@ -57,6 +56,7 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }
     };
 
     const addToFavourite = async () => {
+        loading(true);
         try {
             const body = {
                 user: Number(userId),
@@ -72,12 +72,13 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }
             const errorData = getResponseError(errorResponse);
             setError(errorData);
         } finally {
-            setLoading(false);
+            loading(false);
         }
 
     }
 
     const removeFromFavourite = async () => {
+        loading(true);
         try {
             const formData = new FormData();
             formData.append('category', Number(selectedPlace.category));
@@ -97,7 +98,7 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }
             const errorData = getResponseError(errorResponse);
             setError(errorData);
         } finally {
-            setLoading(false);
+            loading(false);
         }
     }
 
@@ -108,6 +109,11 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }
           addToFavourite();
         }
       };
+
+    const handleDirectionClick = (selectedPlace) => {
+        loading(true);
+        onDirectionsClick(selectedPlace);
+    }
 
 
     return (
@@ -128,7 +134,7 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick  }
                     <CardActions disableSpacing>
                         <IconButton aria-label="Directions">
                             <Avatar className={classes.avatarStyle}>
-                                <DirectionsRoundedIcon onClick={() => onDirectionsClick(selectedPlace)} />
+                                <DirectionsRoundedIcon onClick={() => {handleDirectionClick(selectedPlace)} } />
                             </Avatar>
                         </IconButton>
                         <IconButton onClick={handleFavouriteClick}>
