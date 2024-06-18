@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Collapse, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Collapse, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import DirectionsRoundedIcon from '@mui/icons-material/DirectionsRounded';
@@ -21,6 +21,9 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import EditIcon from '@mui/icons-material/Edit';
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import DescriptionIcon from '@mui/icons-material/Description';
+import SendIcon from '@mui/icons-material/Send';
+import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
+
 import useStyles from './styles';
 
 
@@ -37,7 +40,7 @@ const ExpandMore = styled((props) => {
 }));
 
 
-const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, loading  }) => {
+const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, loading }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
@@ -104,16 +107,24 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
 
     const handleFavouriteClick = () => {
         if (isFavourite) {
-          removeFromFavourite();
+            removeFromFavourite();
         } else {
-          addToFavourite();
+            addToFavourite();
         }
-      };
+    };
 
     const handleDirectionClick = (selectedPlace) => {
         loading(true);
         onDirectionsClick(selectedPlace);
     }
+
+    const handleEmailClick = (email) => {
+        window.location.href = `mailto:${email}`;
+    };
+
+    const handlePhoneClick = (phone) => {
+        window.location.href = `tel:+49${phone}`;
+    };
 
 
     return (
@@ -134,11 +145,11 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
                     <CardActions disableSpacing>
                         <IconButton aria-label="Directions">
                             <Avatar className={classes.avatarStyle}>
-                                <DirectionsRoundedIcon onClick={() => {handleDirectionClick(selectedPlace)} } />
+                                <DirectionsRoundedIcon onClick={() => { handleDirectionClick(selectedPlace) }} />
                             </Avatar>
                         </IconButton>
                         <IconButton onClick={handleFavouriteClick}>
-                            {isFavourite ? <FavoriteIcon fontSize='large' style={{color: 'red'}}/> : <FavoriteBorderIcon fontSize='large' style={{color: 'red'}}/>}
+                            {isFavourite ? <FavoriteIcon fontSize='large' style={{ color: 'red' }} /> : <FavoriteBorderIcon fontSize='large' style={{ color: 'red' }} />}
                         </IconButton>
                         <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
                             <Avatar>
@@ -149,42 +160,63 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
                     <Divider />
                     <CardContent sx={{ padding: 0 }}>
                         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'primary', overflowX: 'hidden' }}>
-                            <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <LocationOnOutlinedIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={`${selectedPlace?.STREET} ${selectedPlace?.POSTCODE} ${selectedPlace?.LOCATION}`}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>
-                            {selectedPlace.PHONE && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <CallIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.PHONE}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            <Tooltip title="Location">
+                                <ListItem className={classes.listItem}>
+                                    <ListItemAvatar>
+                                        <Avatar className={classes.listAvatar}>
+                                            <LocationOnOutlinedIcon fontSize='large' />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={`${selectedPlace?.STREET} ${selectedPlace?.POSTCODE} ${selectedPlace?.LOCATION}`}
+                                        primaryTypographyProps={{
+                                            variant: 'body1',
+                                            style: {
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'normal',
+                                                wordBreak: 'break-word'
+                                            }
+                                        }} />
+                                </ListItem>
+                            </Tooltip>
+                            {selectedPlace.PHONE &&
+                                <Tooltip title="Phone">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <CallIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={
+                                                Array.isArray(selectedPlace?.PHONE) ? (
+                                                    selectedPlace.PHONE.map((phone, index) => (
+                                                        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                                            <div style={{ flex: 1 }}> +49 {phone} </div>
+                                                            <IconButton onClick={() => handlePhoneClick(phone)} aria-label="send email" >
+                                                                <CallOutlinedIcon className={classes.listAvatar} sx={{fontSize: 'large'}}/>
+                                                            </IconButton>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    selectedPlace?.PHONE
+                                                )
+                                            }
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }}
+                                        />
+                                    </ListItem>
+                                </Tooltip>
+
+                            }
 
                         </List>
                     </CardContent>
@@ -192,177 +224,218 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 77vh)', padding: 0 }}>
 
-                            {selectedPlace.WWW && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <PublicIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.WWW}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.WWW &&
+                                <Tooltip title="Website">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <PublicIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.WWW}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
 
-                            {selectedPlace.FAX && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <FaxIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.FAX}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.FAX &&
+                                <Tooltip title="Fax">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <FaxIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.FAX}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.EMAIL && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <EmailIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.EMAIL}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.EMAIL &&
+                                <Tooltip title="Email">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <EmailIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        {/* <Link href={`mailto:${selectedPlace?.EMAIL}`} underline="none"> */}
+                                        <ListItemText
+                                            primary={selectedPlace?.EMAIL}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                        {/* </Link> */}
+                                        <IconButton className={classes.listAvatar} sx={{ marginLeft: 'auto' }} onClick={() => { handleEmailClick(selectedPlace?.EMAIL) }} aria-label="send email" size='small' >
+                                            <SendIcon />
+                                        </IconButton>
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.PROFILE && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <InfoIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.PROFILE}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.PROFILE &&
+                                <Tooltip title="Profile">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <InfoIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.PROFILE}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.LANGUAGES && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <LanguageIcon fontSize='large' title="Languages" />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.LANGUAGES}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.LANGUAGES &&
+                                <Tooltip title="Languages">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <LanguageIcon fontSize='large' title="Languages" />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.LANGUAGES}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.TRAEGER && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <VolunteerActivismIcon fontSize='large' title="Traeger" />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.TRAEGER}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.TRAEGER &&
+                                <Tooltip title="Traeger">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <VolunteerActivismIcon fontSize='large' title="Traeger" />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.TRAEGER}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.DESCRIPTION_ADDITION && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <DescriptionIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.DESCRIPTION_ADDITION}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.DESCRIPTION_ADDITION &&
+                                <Tooltip title="Additional Description">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <DescriptionIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.DESCRIPTION_ADDITION}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.Editor && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <EditIcon fontSize='large' title="Editor" />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.Editor}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.Editor &&
+                                <Tooltip title="Editor">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <EditIcon fontSize='large' title="Editor" />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.Editor}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
-                            {selectedPlace.EditDate && <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                    <Avatar className={classes.listAvatar}>
-                                        <EditCalendarIcon fontSize='large' />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={selectedPlace?.EditDate}
-                                    primaryTypographyProps={{
-                                        variant: 'body1',
-                                        style: {
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'normal',
-                                            wordBreak: 'break-word'
-                                        }
-                                    }} />
-                            </ListItem>}
+                            {selectedPlace.EditDate &&
+                                <Tooltip title="Edit Date">
+                                    <ListItem className={classes.listItem}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.listAvatar}>
+                                                <EditCalendarIcon fontSize='large' />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={selectedPlace?.EditDate}
+                                            primaryTypographyProps={{
+                                                variant: 'body1',
+                                                style: {
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                    wordBreak: 'break-word'
+                                                }
+                                            }} />
+                                    </ListItem>
+                                </Tooltip>
+                            }
 
 
                         </CardContent>

@@ -103,7 +103,6 @@ const UserAccount = () => {
     const handleClickOpen = (add, index, type) => {
         setTypeOfDialog(type);
         if (type === 'edit') {
-            console.log(add, index);
             setDialogAddressDetails({
                 houseNo: add.house_no,
                 streetName: add.street_name,
@@ -231,7 +230,6 @@ const UserAccount = () => {
         setIsValid(false);
 
         if (name === "houseNo") {
-            console.log(value, "house value", value === null, value === '');
             // Validate that houseNo is numeric
             if (!/^\d*$/.test(value)) {
                 isValid = false;
