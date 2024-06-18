@@ -65,7 +65,7 @@ const Maps = ({ loading, error }) => {
       case 'schools':
         return { background: "#cad74d", borderColor: "#98a51b", icon: book };
       // return { background: "#FFA62F", borderColor: "#D77E07", icon: book };
-      case 'kindergarden':
+      case 'kindergarten':
         return { background: "#50C2FF", borderColor: "#0054C3", icon: littleKid };
       // return { background: "#FFA456", borderColor: "#F55E10", icon: book };
       case 'socialChildProjects':

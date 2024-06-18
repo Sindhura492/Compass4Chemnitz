@@ -8,9 +8,9 @@ export const categories=[
         urlName: "getSchools"
     },
     {
-        id: "kindergarden",
-        displayname: "Kindergardens",
-        urlName: 'getKindergarden'
+        id: "kindergarten",
+        displayname: "Kindergartens",
+        urlName: 'getKindergarten'
     },
     {
         id: 'socialChildProjects',

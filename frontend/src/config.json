@@ -4,7 +4,7 @@
         "register": "/api/user/register/",
         "login": "/api/token/",
         "getSchools": "/api/schulen/",
-        "getKindergarden":  "/api/kindergartens/",
+        "getKindergarten":  "/api/kindergartens/",
         "getSocialChildProjects": "/api/schulsozialarbeits/",
         "getSocialTeenagerProjects": "/api/jugendberufshilfens/",
         "getUserInfo": "/api/user-info/:id/",
