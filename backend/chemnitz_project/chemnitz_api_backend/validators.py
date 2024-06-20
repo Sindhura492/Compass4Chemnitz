@@ -4,8 +4,8 @@ def validate_password(password):
     errors = []
 
     # check length
-    if len(password) < 8:
-        errors.append("Password must be at least 8 characters long.")
+    if len(password) < 7:
+        errors.append("Password must be at least 7 characters long.")
 
     #checking for uppercase
     if not re.search(r'[A-Z]', password):
