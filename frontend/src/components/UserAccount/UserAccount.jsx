@@ -343,7 +343,7 @@ const UserAccount = () => {
 
 
 
-    const handleDialogClose = (confirmed) => {
+    const handleDialogClose = async (confirmed) => {
         if (typeOfDialog === 'delete') {
             if (confirmed) {
                 triggerDeleteAddressApi();
@@ -365,7 +365,9 @@ const UserAccount = () => {
         } else {
             if (confirmed) {
                 setIsSuperUser(tempSuperUser);
-                triggerChangeRoleApi();
+                await triggerChangeRoleApi();
+                setAddress(null);
+                await getAddressDetails();
             } else {
                 setIsSuperUser(!tempSuperUser);
             }
