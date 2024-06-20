@@ -498,7 +498,7 @@ const UserAccount = () => {
                         Add Address
                     </Button>
                     <Dialog open={open} onClose={handleClose}>
-                        <DialogTitle>Add Address</DialogTitle>
+                        <DialogTitle>{dialogAddressDetails.houseNo != '' ? 'Edit Address' :  'Add Address'}</DialogTitle>
                         <DialogContent>
                             <Box>
                                 <TextField autoFocus fullWidth margin="dense" label="House No." placeholder="Enter House No" name="houseNo" type="text" value={dialogAddressDetails.houseNo} onChange={handleChange} required error={!!addressError.houseNo} helperText={addressError.houseNo} />
@@ -526,7 +526,7 @@ const UserAccount = () => {
                         <DialogTitle id="alert-dialog-title">{"Confirm Action"}</DialogTitle>
                         <DialogContent>
                             <DialogContentText id="alert-dialog-description">
-                                {typeOfDialog === 'delete' ? "Are you sure you want to delete this address?" : "All the favourites and addresses will be deleted by this action. Are you sure you want to continue?"}
+                                {typeOfDialog === 'delete' ? "Are you sure you want to delete this address?" : "All the favorites and addresses will be deleted by this action. Are you sure you want to continue?"}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>

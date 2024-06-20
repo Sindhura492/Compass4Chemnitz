@@ -83,7 +83,7 @@ export const generalJson = (arr) => {
             Creator: ele.Creator ? ele.Creator != 'nan' ? ele.Creator : null : null,
             EditDate: ele.EditDate ? ele.EditDate != 'nan' ? ele.EditDate : null : null,
             Editor: ele.Editor ? ele.Editor != 'nan' ? ele.Editor : null : null,
-            is_favourite: ele.is_favorite,
+            is_favorite: ele.is_favorite,
             category: ele.category
         };
         response.push(element);
@@ -93,7 +93,7 @@ export const generalJson = (arr) => {
 }
 
 
-export const parseFavouriteData = (arr) => {
+export const parseFavoriteData = (arr) => {
     let response = [];
     if (!(arr instanceof Array)) {
         return null

@@ -87,7 +87,7 @@ const Maps = ({ loading, error }) => {
     setPlaceDetails(false);
   };
 
-  const handleFavourite = (value) => {
+  const handleFavorite = (value) => {
     setFavChanged(value)
   }
 
@@ -123,7 +123,7 @@ const Maps = ({ loading, error }) => {
               error={error}
               selectedPlace={selectedPin}
               favChanged={favChanged}
-              handleFavChange={handleFavourite}
+              handleFavChange={handleFavorite}
             />
           ) : null}
         <Box className={classes.mapContainer}>
@@ -172,7 +172,7 @@ const Maps = ({ loading, error }) => {
             })}
           </Map>
 
-          {showPlaceDetails && (<PlaceDetails onClose={handlePlaceCardClose} selectedPlace={selectedPin} favChanged={handleFavourite} onDirectionsClick={handleDirectionsClick} loading={loading} />)}
+          {showPlaceDetails && (<PlaceDetails onClose={handlePlaceCardClose} selectedPlace={selectedPin} favChanged={handleFavorite} onDirectionsClick={handleDirectionsClick} loading={loading} />)}
 
         </Box>
       </Box>

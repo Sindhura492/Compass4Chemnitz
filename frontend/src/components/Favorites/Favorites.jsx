@@ -5,7 +5,7 @@ import { theme } from '../../utils/themeProvider';
 import Header from '../Header/Header';
 import ErrorHandler from '../ErrorHandler/ErrorHandler';
 import api, { routes } from '../../api';
-import { generateURL, parseFavouriteData } from '../../general';
+import { generateURL, parseFavoriteData } from '../../general';
 import { getResponseError, getResponseInfo } from '../../utils/errorUtils';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CallIcon from '@mui/icons-material/Call';
@@ -15,7 +15,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 
-const Favourites = () => {
+const Favorites = () => {
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [favDetails, setFavDetails] = useState(null);
@@ -26,12 +26,12 @@ const Favourites = () => {
     const navigate = useNavigate();
 
 
-    const getFavourites = async () => {
+    const getFavorites = async () => {
         setLoading(true);
         try {
-            const favouriteUrl = generateURL(routes.getFavourite, { id: userId });
-            const res = await api.get(favouriteUrl);
-            const parseData = parseFavouriteData(res?.data);
+            const favoriteUrl = generateURL(routes.getFavorite, { id: userId });
+            const res = await api.get(favoriteUrl);
+            const parseData = parseFavoriteData(res?.data);
             console.log(parseData);
             if (parseData != null) {
                 setFavDetails(parseData);
@@ -49,16 +49,16 @@ const Favourites = () => {
     };
 
     useEffect(() => {
-        getFavourites();
+        getFavorites();
     }, []);
 
-    const removeFromFavourite = async (item) => {
+    const removeFromFavorite = async (item) => {
         try {
             const formData = new FormData();
             formData.append('category', Number(item.category));
             formData.append('item', Number(item.item));
-            const deleteFavouriteUrl = generateURL(routes.deleteFavourite, { id: userId });
-            const response = await api.delete(deleteFavouriteUrl, {
+            const deleteFavoriteUrl = generateURL(routes.deleteFavorite, { id: userId });
+            const response = await api.delete(deleteFavoriteUrl, {
                 data: formData,
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -66,7 +66,7 @@ const Favourites = () => {
             });
             const responseInfo = getResponseInfo(response);
             setError(responseInfo);
-            getFavourites();
+            getFavorites();
         } catch (errorResponse) {
             const errorData = getResponseError(errorResponse);
             setError(errorData);
@@ -88,13 +88,14 @@ const Favourites = () => {
 
                 <Header isLoginPage={false} />
 
-                {!isLoading && <Container maxWidth="md" sx={{ p: 3, flex: '1 0 auto' }}>
+                {!isLoading && 
+                <Container maxWidth="md" sx={{ p: 3, minHeight: '80vh' }}>
                     <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
                         <IconButton size="small">
                             <ArrowBackIosNewIcon onClick={naviagteToHome} />
                         </IconButton>
                         <Typography variant="h5">
-                            Favourites
+                            Favorites
                         </Typography>
                     </Box>
 
@@ -111,7 +112,7 @@ const Favourites = () => {
                             <Card sx={{ mt: 2, backgroundColor: 'secondary.main' }} key={index} >
                                 <CardHeader
                                     action={
-                                        <IconButton onClick={() => removeFromFavourite(item)}>
+                                        <IconButton onClick={() => removeFromFavorite(item)}>
                                             <FavoriteIcon fontSize="large" style={{ color: 'red' }} />
                                         </IconButton>
                                     }
@@ -159,12 +160,15 @@ const Favourites = () => {
                         )
                     })}
 
-                </Container>}
+                </Container>
+                }
+                
                 {error && <ErrorHandler error={error} onClose={() => { setError(null) }} />}
+            
                 <Footer show={true}/>
             </Box>
         </ThemeProvider>
     )
 }
 
-export default Favourites
+export default Favorites

@@ -44,13 +44,13 @@ const ExpandMore = styled((props) => {
 const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, loading }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
-    const [isFavourite, setIsFavourite] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
 
 
     useEffect(() => {
-        setIsFavourite(selectedPlace.is_favourite)
+        setIsFavorite(selectedPlace.is_favorite)
     }, [selectedPlace])
 
     const userId = localStorage.getItem('user_id');
@@ -60,7 +60,7 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
         setExpanded(!expanded);
     };
 
-    const addToFavourite = async () => {
+    const addToFavorite = async () => {
         loading(true);
         try {
             const body = {
@@ -68,10 +68,10 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
                 category: Number(selectedPlace.category),
                 item: Number(selectedPlace.ID)
             }
-            const response = await api.post(routes.addToFavourite, body);
+            const response = await api.post(routes.addToFavorite, body);
             const responseInfo = getResponseInfo(response);
             setError(responseInfo);
-            setIsFavourite(true);
+            setIsFavorite(true);
             favChanged(responseInfo);
         } catch (errorResponse) {
             const errorData = getResponseError(errorResponse);
@@ -82,14 +82,14 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
 
     }
 
-    const removeFromFavourite = async () => {
+    const removeFromFavorite = async () => {
         loading(true);
         try {
             const formData = new FormData();
             formData.append('category', Number(selectedPlace.category));
             formData.append('item', Number(selectedPlace.ID));
-            const deleteFavouriteUrl = generateURL(routes.deleteFavourite, { id: userId });
-            const response = await api.delete(deleteFavouriteUrl, {
+            const deleteFavoriteUrl = generateURL(routes.deleteFavorite, { id: userId });
+            const response = await api.delete(deleteFavoriteUrl, {
                 data: formData,
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -97,7 +97,7 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
             });
             const errorData = getResponseInfo(response);
             setError(errorData);
-            setIsFavourite(false);
+            setIsFavorite(false);
             favChanged(errorData);
         } catch (errorResponse) {
             const errorData = getResponseError(errorResponse);
@@ -107,11 +107,11 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
         }
     }
 
-    const handleFavouriteClick = () => {
-        if (isFavourite) {
-            removeFromFavourite();
+    const handleFavoriteClick = () => {
+        if (isFavorite) {
+            removeFromFavorite();
         } else {
-            addToFavourite();
+            addToFavorite();
         }
     };
 
@@ -171,8 +171,8 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
                                 <DirectionsRoundedIcon />
                             </Avatar>
                         </IconButton>
-                        <IconButton onClick={handleFavouriteClick}>
-                            {isFavourite ? <FavoriteIcon fontSize='large' style={{ color: 'red' }} /> : <FavoriteBorderIcon fontSize='large' style={{ color: 'red' }} />}
+                        <IconButton onClick={handleFavoriteClick}>
+                            {isFavorite ? <FavoriteIcon fontSize='large' style={{ color: 'red' }} /> : <FavoriteBorderIcon fontSize='large' style={{ color: 'red' }} />}
                         </IconButton>
                         <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
                             <Avatar className={classes.expandMore}>
