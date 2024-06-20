@@ -66,6 +66,7 @@ class FavoriteView(APIView):
                 'PLZ': item_data.PLZ if item_data.PLZ != 'nan' else None,
                 'ORT': item_data.ORT if item_data.ORT != 'nan' else None,
                 'EMAIL': item_data.EMAIL if item_data.EMAIL != 'nan' else None,
+                'ART':item_data.ORT if item_data.ORT != 'nan' else None,
         }
 
         serializer = FavoriteSerializer(data=data)
