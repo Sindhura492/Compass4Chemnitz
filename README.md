@@ -31,7 +31,7 @@ Open your browser and go to http://localhost:5173 (or the URL provided by Vite).
 ## Django(Backend) Setup
 
 #### 1. In the new terminal, navigate to the backend directory:
-          cd backend
+          cd backend/chemnitz_project/
 
   
 #### 2. Install the required packages:
@@ -53,13 +53,18 @@ Open backend/chemnitz_project/chemnitz_project/settings.py and update the DATABA
       }
 
 #### 4. Create database in Mysql
+Create a Schema of with a name of your choice. Add that name in settings.py file of the project.
 
 
 #### 5. Apply database migrations:
+        python manage.py makemigrations
         python manage.py migrate
 
 #### 6. Start the Django development server:
-          python manage.py runserver_compass4chemnitz
+        python manage.py runserver_compass4chemnitz
+
+
+  
 
 
 
