@@ -47,10 +47,10 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
         navigate('/');
     }
 
-    const naviagteToFavourites = () => {
+    const naviagteToFavorites = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
-        navigate('/favourite');
+        navigate('/favorite');
     }
 
     const menuId = 'primary-search-account-menu';
@@ -66,10 +66,10 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
     const renderMobileMenu = (
         <Menu anchorEl={mobileMoreAnchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right', }} id={mobileMenuId} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={isMobileMenuOpen} onClose={handleMobileMenuClose} >
             <MenuItem>
-                <IconButton size="large" color="inherit" onClick={naviagteToFavourites}>
+                <IconButton size="large" color="inherit" onClick={naviagteToFavorites}>
                     <FavoriteIcon />
                 </IconButton>
-                <p>Favorites</p>
+                <p onClick={naviagteToFavorites}>Favorites</p>
             </MenuItem>
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton size="large" aria-controls="primary-search-account-menu" aria-haspopup="true" color="inherit" >
@@ -132,7 +132,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
                     {!isLoginPage && (
                         <>
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                                <IconButton size="large" aria-label="favourites" color="inherit" onClick={naviagteToFavourites}>
+                                <IconButton size="large" aria-label="favorites" color="inherit" onClick={naviagteToFavorites}>
                                     {/* <Badge badgeContent={17} color="error"> */}
                                     <FavoriteIcon />
                                     {/* </Badge> */}

@@ -39,8 +39,8 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
       markPlaces(updatedResponse)
       setOpen(true)
       handleFavChange(null);
-    } catch(error) {
-      const errorData = getResponseError(error);
+    } catch(err) {
+      const errorData = getResponseError(err);
       error(errorData);
     } finally {
       loading(false)
@@ -72,7 +72,7 @@ const Categories = ({ selectedCategory, onClose, onPlaceSelect, markPlaces, load
                     <>
                       <Typography component={'span'} variant="body2" color="text.primary">{place?.ART}</Typography><br />
                       <Typography component={'span'} variant="body2" color="text.secondary">{place?.STREET}</Typography><br />
-                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.PHONE}</Typography><br />
+                      <Typography component={'span'} variant="body2" color="text.secondary">{place?.PHONE ? `+49 ${place?.PHONE}` : null}</Typography><br />
                     </>
                   }
                 />

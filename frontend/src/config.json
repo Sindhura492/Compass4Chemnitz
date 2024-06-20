@@ -4,17 +4,18 @@
         "register": "/api/user/register/",
         "login": "/api/token/",
         "getSchools": "/api/schulen/",
-        "getKindergarden":  "/api/kindergartens/",
+        "getKindergarten":  "/api/kindergartens/",
         "getSocialChildProjects": "/api/schulsozialarbeits/",
         "getSocialTeenagerProjects": "/api/jugendberufshilfens/",
         "getUserInfo": "/api/user-info/:id/",
         "getAddress": "/api/user-address/:id/",
         "saveAddress": "/api/add-address/",
         "deactivateUser": "/api/soft-delete-user/:id/",
-        "addToFavourite": "/api/favorites/",
-        "deleteFavourite": "/api/favorites/delete/:id/",
-        "getFavourite": "/api/favorites/:id/",
-        "changeRole": "/api/change-role/:id/"
-
+        "addToFavorite": "/api/favorites/",
+        "deleteFavorite": "/api/favorites/delete/:id/",
+        "getFavorite": "/api/favorites/:id/",
+        "changeRole": "/api/change-role/:id/",
+        "editAddress": "/api/address/update/:id/",
+        "deleteAddress": "/api/user-address/delete/:id/"
     }
 }

@@ -3,14 +3,15 @@ import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles((theme) => ({
   sidebar: {
     height: 'inherit',
-    position: 'absolute',
+    position: 'fixed',
     right: 0,
     // top: 0,
     transition: 'transform 0.3s ease-in-out',
     transform: 'translateX(100%)', // Sidebar hidden by default
-    zIndex: 1200,
+    zIndex: 120,
     transition: 'width 0.5s ease, opacity 0.5s ease, transform 0.5s ease',
     backgroundColor: `${theme.palette.primary.light} !important`,
+    overflow: 'hidden'
     // maxWidth: '20%',
   },
   sidebarOpen: {
