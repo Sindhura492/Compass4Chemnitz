@@ -37,7 +37,36 @@ const useStyles = makeStyles((theme) => ({
         border: 'none',
         color: '#1a73e8 !important',
         padding: 0,
-      }
+      },
+      websiteLink: {
+        cursor: 'pointer', // Change cursor to pointer on hover
+        textDecoration: 'none', // Remove default underline
+        '&:hover': { // Underline on hover
+          textDecoration: 'underline',
+        },
+      },
+      scrollbar: {
+        overflowY: 'auto', // Adjust based on the height of the drawerHeader
+        height: 'calc(100vh - 17vh)', // Adjust based on the height of the drawerHeader
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+      },
+
+      expandMore: {
+        backgroundColor: `${theme.palette.primary.main} !important`,
+        border: '1px solid #E1992F'
+      },
 
     }
 

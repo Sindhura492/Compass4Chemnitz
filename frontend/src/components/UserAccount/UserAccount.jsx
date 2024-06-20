@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { theme } from '../../utils/themeProvider'
 import useStyles from './styles'
+import Footer from '../Footer/Footer';
 
 const UserAccount = () => {
     const classes = useStyles();
@@ -47,6 +48,8 @@ const UserAccount = () => {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [tempSuperUser, setTempSuperUser] = useState(false);
+
+    const [showFooter, setShowFooter] = useState(true);
 
     const userId = localStorage.getItem('user_id');
     const navigate = useNavigate();
@@ -100,9 +103,10 @@ const UserAccount = () => {
 
 
 
-    const handleClickOpen = (add, index, type) => {
+    const handleClickOpen = (add, type) => {
         setTypeOfDialog(type);
         if (type === 'edit') {
+            setShowFooter(false);
             setDialogAddressDetails({
                 houseNo: add.house_no,
                 streetName: add.street_name,
@@ -113,6 +117,7 @@ const UserAccount = () => {
                 id: add.id
             })
             setOpen(true);
+
 
         } else if (type === 'delete') {
             setDialogAddressDetails({
@@ -124,15 +129,17 @@ const UserAccount = () => {
                 country: add.country,
                 id: add.id
             })
+            setShowFooter(false);
             setDialogOpen(true);
         } else {
+            setShowFooter(false);
             setOpen(true);
-
         }
 
     };
 
     const handleClose = () => {
+        setShowFooter(true);
         setDialogAddressDetails({
             houseNo: "",
             streetName: "",
@@ -313,6 +320,7 @@ const UserAccount = () => {
         } else {
             // Show the dialog when switching off
             setTempSuperUser(targetValue);
+            setShowFooter(false);
             setDialogOpen(true);
         }
     };
@@ -363,6 +371,7 @@ const UserAccount = () => {
             }
         }
         setDialogOpen(false);
+        setShowFooter(true);
     };
 
     const naviagteToHome = () => {
@@ -374,9 +383,12 @@ const UserAccount = () => {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             {isLoading && <Loader />}
+
+            <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
+
             <Header isLoginPage={false} />
 
-            {!isLoading && <Container maxWidth="md" sx={{ p: 3 }}>
+            {!isLoading && <Container maxWidth="md" sx={{ p: 3, flex: '1 0 auto' }}>
                 <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
                     <IconButton size="small" onClick={naviagteToHome}>
                         <ArrowBackIosNewIcon />
@@ -448,8 +460,8 @@ const UserAccount = () => {
                                         {`Address ${index + 1}`}
                                     </Typography>
                                     <Box>
-                                        <Button startIcon={<EditIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, index, 'edit') }}>Edit</Button>
-                                        <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, index, 'delete') }}>Delete</Button>
+                                        <Button startIcon={<EditIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, 'edit') }}>Edit</Button>
+                                        <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, 'delete') }}>Delete</Button>
                                     </Box>
                                 </Box>
 
@@ -482,7 +494,7 @@ const UserAccount = () => {
                         <Typography variant="body1" gutterBottom> No Address Added </Typography>
                     </Box>}
 
-                    <Button variant="contained" color="primary" onClick={() => { handleClickOpen(null, null, 'add') }}>
+                    <Button variant="contained" color="primary" onClick={() => { handleClickOpen(null, 'add') }}>
                         Add Address
                     </Button>
                     <Dialog open={open} onClose={handleClose}>
@@ -530,6 +542,8 @@ const UserAccount = () => {
             </Container>}
 
             {error && <ErrorHandler error={error} onClose={() => { setError(null) }} />}
+            <Footer show={showFooter} />
+            </Box>
         </ThemeProvider>
     )
 }

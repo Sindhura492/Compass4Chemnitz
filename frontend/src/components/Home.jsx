@@ -31,8 +31,6 @@ const Home = () => {
             error={handleError}/>
 
             {error && <ErrorHandler error={error} onClose={() => setError(null)} />}
-
-            <Footer />
             </Box>
 
         </ThemeProvider>
