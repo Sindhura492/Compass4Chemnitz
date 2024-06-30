@@ -18,8 +18,8 @@
     "@vis.gl/react-google-maps": "^1.0.2",
     "axios": "^1.7.2",
     "jwt-decode": "^4.0.0",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
