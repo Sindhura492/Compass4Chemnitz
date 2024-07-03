@@ -27,8 +27,8 @@ const ErrorHandler = ({ error, onClose }) => {
         {/* <Stack sx={{ width: '100%' }} spacing={2}> */}
           {showAlert && (
             <Alert severity={error.statusType || 'error'} onClose={handleClose}>
-              {error?.title && <AlertTitle>{error.title}</AlertTitle>}
-              {error?.message?.detail} 
+              {/* {error?.title && <AlertTitle>{error.title}</AlertTitle>} */}
+              <AlertTitle>{error?.message?.detail} </AlertTitle>
               {/* <IconButton onClick={handleClose}>
                 <CloseIcon />
               </IconButton> */}

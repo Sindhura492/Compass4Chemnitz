@@ -32,7 +32,6 @@ const Favorites = () => {
             const favoriteUrl = generateURL(routes.getFavorite, { id: userId });
             const res = await api.get(favoriteUrl);
             const parseData = parseFavoriteData(res?.data);
-            console.log(parseData);
             if (parseData != null) {
                 setFavDetails(parseData);
             } else {

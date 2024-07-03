@@ -129,8 +129,15 @@ const PlaceDetails = ({ selectedPlace, onClose, favChanged, onDirectionsClick, l
     };
 
     const handleGoToWebsite = () => {
-        if (selectedPlace?.WWW) {
-            window.open(selectedPlace.WWW, '_blank');
+        let url = selectedPlace?.WWW
+        if (url) {
+            // Check if the URL starts with 'http://' or 'https://'
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                // If not, prepend 'http://'
+                url = 'https://' + url;
+            }
+            console.log(url);
+            window.open(url, '_blank');
         }
     };
 

@@ -58,7 +58,7 @@ export default function Header({ isSuperUser = false, isLoginPage = true }) {
         <Menu anchorEl={anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right', }} id={menuId} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'right', }} open={isMenuOpen} onClose={handleMenuClose} >
             {/* <MenuItem onClick={handleMenuClose}>Profile</MenuItem> */}
             <MenuItem onClick={navigateToUserAccount}>My Account</MenuItem>
-            <MenuItem onClick={handleMenuClose}><Link href="/logout" underline="none" color='inherit'>Logout</Link></MenuItem>
+            <Link href="/logout" underline="none" color='inherit'><MenuItem onClick={handleMenuClose}>Logout</MenuItem></Link>
         </Menu>
     );
 

@@ -50,6 +50,8 @@ const UserAccount = () => {
     const [tempSuperUser, setTempSuperUser] = useState(false);
 
     const [showFooter, setShowFooter] = useState(true);
+    const [deleteUser, setDeleteUser] = useState(false);
+    const [message, setMessage] = useState(null);
 
     const userId = localStorage.getItem('user_id');
     const navigate = useNavigate();
@@ -129,6 +131,7 @@ const UserAccount = () => {
                 country: add.country,
                 id: add.id
             })
+            setMessage("Are you sure you want to delete this address?");
             setShowFooter(false);
             setDialogOpen(true);
         } else {
@@ -277,7 +280,14 @@ const UserAccount = () => {
 
     }
 
-    const deleteUser = async () => {
+    const deleteUserDialog = () => {
+        setDeleteUser(true);
+        setMessage("Are you sure you want to delete the account?");
+        setShowFooter(false);
+        setDialogOpen(true);
+    }
+
+    const deleteUserApi = async () => {
         setLoading(true);
         try {
             const deactivateAccountUrl = generateURL(routes.deactivateUser, { id: userId });
@@ -320,6 +330,7 @@ const UserAccount = () => {
         } else {
             // Show the dialog when switching off
             setTempSuperUser(targetValue);
+            setMessage("All the favorites and addresses will be deleted by this action. Are you sure you want to continue?");
             setShowFooter(false);
             setDialogOpen(true);
         }
@@ -361,8 +372,17 @@ const UserAccount = () => {
                     postalcode: '',
                     streetName: ''
                 })
+            } else {
+                setTypeOfDialog(null);
             }
-        } else {
+        } else if (deleteUser){
+            if (confirmed) {
+                await deleteUserApi();
+            } else {
+                setDeleteUser(false)
+            }
+        } 
+        else {
             if (confirmed) {
                 setIsSuperUser(tempSuperUser);
                 await triggerChangeRoleApi();
@@ -372,6 +392,7 @@ const UserAccount = () => {
                 setIsSuperUser(!tempSuperUser);
             }
         }
+        // setMessage(null);
         setDialogOpen(false);
         setShowFooter(true);
     };
@@ -419,7 +440,7 @@ const UserAccount = () => {
                             <TextField fullWidth label="Last Name" defaultValue={userDetails?.last_name} margin="dense" disabled />
                             <TextField fullWidth label="Email" defaultValue={userDetails?.email} margin="dense" disabled />
                             <TextField fullWidth label="Username" defaultValue={userDetails?.user_name} margin="dense" disabled />
-                            <Button variant="contained" onClick={deleteUser} color="primary" sx={{ mt: 1 }}>
+                            <Button variant="contained" onClick={deleteUserDialog} color="error" sx={{ mt: 1 }}>
                                 Delete Account
                             </Button>
                             {/* <TextField fullWidth label="Password" defaultValue="+1 817 718 8273" margin="dense" disabled /> */}
@@ -446,7 +467,7 @@ const UserAccount = () => {
                                 label="Super User"
                                 sx={{ m: 0 }}
                             />
-                            <Tooltip title="Switch user enables user to add more addresses." arrow enterTouchDelay={0} leaveTouchDelay={3000}>
+                            <Tooltip title="Super user enables user to add more addresses." arrow enterTouchDelay={0} leaveTouchDelay={3000}>
                                 <IconButton size="small" className={classes.switchIconPosition} >
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
@@ -462,8 +483,8 @@ const UserAccount = () => {
                                         {`Address ${index + 1}`}
                                     </Typography>
                                     <Box>
-                                        <Button startIcon={<EditIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, 'edit') }}>Edit</Button>
-                                        <Button startIcon={<DeleteIcon />} size="small" variant="text" onClick={() => { handleClickOpen(add, 'delete') }}>Delete</Button>
+                                        <Button startIcon={<EditIcon />} size="small" variant="primary" onClick={() => { handleClickOpen(add, 'edit') }}>Edit</Button>
+                                        <Button startIcon={<DeleteIcon />} size="small" variant="primary" onClick={() => { handleClickOpen(add, 'delete') }}>Delete</Button>
                                     </Box>
                                 </Box>
 
@@ -528,7 +549,7 @@ const UserAccount = () => {
                         <DialogTitle id="alert-dialog-title">{"Confirm Action"}</DialogTitle>
                         <DialogContent>
                             <DialogContentText id="alert-dialog-description">
-                                {typeOfDialog === 'delete' ? "Are you sure you want to delete this address?" : "All the favorites and addresses will be deleted by this action. Are you sure you want to continue?"}
+                                {message}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
