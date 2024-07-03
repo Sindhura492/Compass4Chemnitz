@@ -54,7 +54,7 @@ class Command(BaseCommand):
                         KURZBEZEICHNUNG=attributes.get('KURZBEZEICHNUNG', ''),
                         STRASSE=attributes.get('STRASSE', ''),
                         PLZ=attributes.get('PLZ', ''),
-                        ORT=attributes.get('ORT', ''),
+                        ORT=attributes.get('ORT', ''), 
                         TELEFON=attributes.get('TELEFON', ''),
                         EMAIL=attributes.get('EMAIL', ''),
                         FAX=attributes.get('FAX', ''),
